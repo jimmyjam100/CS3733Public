@@ -1,0 +1,14 @@
+select start_time from TimeSlots
+where schedule_id = ? and open = 'Y';
+
+select * from TimeSlots
+where schedule_id = ?;
+
+select * from Schedules
+where schedule_id = ?;
+
+select schedule_id from Schedules
+where created < ?
+
+select schedule_id from Schedules
+where created > ?
