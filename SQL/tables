@@ -1,0 +1,23 @@
+create sequence scheduleIDSeq
+start with 0,
+increment by 1;
+
+create table Schedules (
+  id number,
+  secret_code char(20),
+  created date,
+  slot_size number,
+  constraint pk_schedules primary key id,
+  constraint slot_range check (slot_size in (10, 15, 20, 30, 60))
+);
+
+create table TimeSlots (
+  start_time date,
+  schedule_id number,
+  open char(1),
+  user varchar2(20),
+  constraint pk_timeslots primary key (start_time, schedule_id),
+  constraint fk_timeschedule foreign key (schedule_id) references Schedules(id)
+);
+  
+  
