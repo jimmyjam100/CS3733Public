@@ -17,7 +17,8 @@ create table TimeSlots (
   open char(1),
   user varchar2(20),
   constraint pk_timeslots primary key (start_time, schedule_id),
-  constraint fk_timeschedule foreign key (schedule_id) references Schedules(id)
+  constraint fk_timeschedule foreign key (schedule_id) references Schedules(id),
+  constraint open_val check (open in ('Y', 'N'))
 );
   
   
