@@ -1,0 +1,21 @@
+Required third party libraries placed here. You may need to do this manually.
+Once you complete these two downloads, place the files here (whether .JAR or .ZIP) 
+and then modify the project build path so these files are included in the build.
+
+Note: If your version numbers are different that is ok.
+
+1. Grab mysql-connector-java-5.1.x.jar from here:
+
+  https://dev.mysql.com/downloads/connector/j/5.1.html
+
+  Choose the "Platform Independent (Architecture Independent), ZIP Archive" near the bottom
+
+  Just select "No thanks, start my download" at the bottom. The direct link is:
+
+  https://dev.mysql.com/get/Downloads/Connector-J/mysql-connector-java-5.1.47.zip
+
+2. Grab gson-2.6.2.jar file from here:
+
+  https://repo1.maven.org/maven2/com/google/code/gson/gson/2.6.2/
+  
+  

@@ -19,10 +19,10 @@ public class ScheduleDAO {
     }
     
     
-    public boolean addConstant(Schedule sched) throws Exception {
+    public boolean addSchedule(Schedule sched) throws Exception {
         try {
             PreparedStatement ps = conn.prepareStatement("SELECT * FROM Schedules WHERE date = ?;");
-            ps.setDate(1, sched.date);
+            ps.setDate(1, (Date) sched.date);
             ResultSet resultSet = ps.executeQuery();
             
             // already present?
@@ -33,7 +33,7 @@ public class ScheduleDAO {
             }
 
             ps = conn.prepareStatement("INSERT INTO Schedules (date) values(?);");
-            ps.setDate(1,  sched.date);
+            ps.setDate(1,  (Date) sched.date);
             ps.execute();
             return true;
 

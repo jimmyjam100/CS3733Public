@@ -1,6 +1,6 @@
 package edu.wpi.cs.yidun.model;
 
-import java.sql.Date;
+import java.util.Date;
 
 public class Schedule {
 	public Date date;
