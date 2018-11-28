@@ -1,0 +1,65 @@
+<html>
+<head>
+<script type="text/javascript">
+
+function displayWeek(){
+	var weekDisplay = document.getElementById('weekDisplay');
+	var addString = "";
+	
+	weekDisplay.innerHTML = "<a> hi </a>";
+}
+function addTime(i, )
+
+</script>
+</head>
+
+<body onload="displayWeek()">
+<p>
+<a>start date</a>
+<input type="date"></input>
+
+<a>end date</a>
+<input type="date" placeholder="end date"></input>
+<a>timeslot len:</a>
+<select>
+	<option value = "10">10 min</option>
+	<option value = "15">15 min</option>
+	<option value = "30">30 min</option>
+	<option value = "60">60 min</option>
+</select>
+<button>Create Schedule</button>
+</p>
+<p>
+Schedule List:
+
+<table id="schedList"></table>
+</p>
+<hr width=100%></hr>
+
+<p id="scheduleName">
+no schedule detected
+</p>
+
+<p>
+<button>add time to begginging</button>
+<button border-color="red">Delete Schedule</button>
+<button>add time to end</button>
+</p>
+<p>
+<input placeholder="Enter Week"></input>
+<button>Display</button>
+</p>
+
+<p onload="displayWeek('hi')">
+<table id='weekDisplay'>
+
+</table>
+</p>
+
+<script>
+for(i = 0; i < 5; i++){
+	document.write("<a>hi" + i + "</a>");
+}
+</script>
+</body>
+</html>
