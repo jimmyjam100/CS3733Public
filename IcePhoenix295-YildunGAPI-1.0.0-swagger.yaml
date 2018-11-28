@@ -1,0 +1,562 @@
+swagger: '2.0'
+info:
+  description: An API to describe ability to create and update schedules that other uses can join and modify.
+  version: 1.0.0
+  title: Scehdule Creator API
+  # put the contact info for your development or API team
+  contact:
+    email: cdbruneau@wpi.edu
+ 
+
+ 
+    
+    
+
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+
+# tags are used for organizing operations
+tags:
+- name: admins
+  description: Secured Admin-only calls
+- name: organizers
+  description: Operations available to those who create schedules
+- name: participants
+  description: Operations available to all users
+  
+paths:
+  
+          
+          
+  /createSchedule:
+    post:
+      tags:
+      - organizers
+      summary: creates a schedule
+      operationId: createSchedule
+      description: adds a schedule to system
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - in: query
+        name: startDate
+        description: first day in the schedule
+        required: true
+        type: string
+        format: date
+      - in: query
+        name: endDate
+        description: last day in the schedule
+        required: true
+        type: string
+        format: date
+      - in: query
+        name: starTime
+        description: beginning of first time slots
+        required: true
+        type: string
+        format: time
+      - in: query
+        name: endTime
+        description: end of last time slots
+        required: true
+        type: string
+        format: time
+      - in: query
+        name: sName
+        description: name of schedule as it will appear in list
+        required: true
+        type: string
+      - in: query
+        name: slotDuration
+        description: how long (in minutes) is each time slot
+        required: true
+        type: integer
+      responses:
+        201:
+          description: Schedule created
+          schema:
+            $ref: '#/definitions/Schedule'
+            
+        400:
+          description: invalid input, object invalid
+ 
+        
+  /deleteSchedule:
+    post:
+      tags:
+      - organizers
+      summary: deletes a schedule
+      operationId: deleteSchedule
+      description: deletes a schedule from the system
+      parameters:
+      - in: query
+        name: scheduleID
+        description: the unique id string for a given shedule
+        required: true
+        type: string
+     
+      - in: query
+        name: secretCode
+        description: access code for schedule
+        type: string
+      responses:
+        204:
+          description: schedule was deleted
+        404: 
+          description: invlid scheduel id
+        421:
+          description: incorrect secret code
+          
+  /closeTimeSlot:
+    post:
+      tags:
+      - organizers
+      summary: closes a timeSlot
+      operationId: closeTimeSlot
+      description: closes a time slot in a schedule
+      parameters:
+      - in: query
+        name: slotTime
+        description: timeSlot time
+        required: true
+        type: string
+        format: time
+      - in: query
+        name: slotDate
+        description: Timeslot date
+        required: true
+        type: string
+        format: date
+      - in: query
+        name: secretCode
+        description: access code for schedule
+        type: string
+      responses:
+        201:
+          description: TimeSlot closed
+        400:
+          description: invalid input, object invalid
+        420:
+          description: an existing timeSlot is already closed
+        421:
+          description: incorrect secret code
+          
+  /openTimeSlot:
+    post:
+      tags:
+      - organizers
+      summary: opens a time slot
+      operationId: openTimeSlot
+      description: opens a time slot in a schedule
+      parameters:
+      - in: query
+        name: slotTime
+        description: timeSlot time
+        required: true
+        type: string
+        format: time
+      - in: query
+        name: slotDate
+        description: Timeslot date
+        required: true
+        type: string
+        format: date
+      - in: query
+        name: secretCode
+        description: access code for schedule
+        type: string
+      responses:
+        201:
+          description: Time slot opened
+        400:
+          description: invalid input, object invalid
+        420:
+          description: an existing time slot is already opened
+        421:
+          description: incorrect secret code
+        
+  /createMeeting:
+    post:
+      tags:
+      - participants
+      summary: Create a meeting
+      operationId: createMeeting
+      description: |
+        create a meeting in a given timeslot
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - in: body
+        name: timeslot
+        description: |
+          The timeslot to fill with a meeting
+        required: true
+        schema:
+          $ref: '#/definitions/TimeSlot'
+
+      responses:
+        200:
+          description: meeting created
+        400:
+          description: invalid input, object invalid
+        420:
+          description: an existing item already exists
+        
+  /cancelMeeting:
+    post:
+      tags:
+        - organizers
+        - participants
+      summary: cancels Meetings
+      operationId: cancelMeeting
+      description: |
+        cancels the meeting
+      produces:
+      - application/json
+      parameters: 
+      - in: query
+        name: timeslotId
+        description: the id of the timeslot that contains the meeting you wish to cancel
+        required: true
+        type: string
+      - in: query
+        name: meetingId
+        description: the id of the meeting you wish to cancel
+        required: true
+        type: string
+      - in: query
+        name: secretCode
+        description: access code for schedule
+        type: string
+      responses:
+        200:
+          description: Meeting successfully cancelled
+        400:
+          description: bad timeslotId
+        420:
+          description: bad meetingId
+        421:
+          description: incorrect secret code
+        
+  /showWeekSchedule:
+    get:
+      tags:
+        - organizers
+        - participants
+      summary: shows a week in the schedule
+      operationId: showWeekSchedule
+      description: |
+        shows a week in the schedule
+      produces:
+      - application/json
+      parameters: 
+      - in: query
+        name: weekId
+        description: the id of the week that you wish to show
+        required: true
+        type: string
+
+      responses:
+        200:
+          description: search results matching criteria
+          schema:
+            items:
+              $ref: '#/definitions/Week'
+        400:
+          description: bad weekId
+      
+          
+  /extendEndingDate:
+    post:
+      tags:
+        - organizers
+      summary: extends the ending date of a schedule
+      operationId: extendEndingDate
+      description: |
+        extends the ending date of a schedule
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters: 
+      - in: query
+        name: scheduleId
+        description: the id of the schedule you wish to extend
+        required: true
+        type: string
+      - in: body
+        name: extendTo
+        description: the ammount of time you wish to extend to
+        schema:
+          type: string
+          format: month-day-year
+      - in: query
+        name: secretCode
+        description: access code for schedule
+        type: string
+      responses:
+        200:
+          description: succsesfully extended
+        400:
+          description: invalid scheduleId
+        420:
+          description: invalid date
+        421:
+          description: incorrect secret code
+
+  /extendStartingDate:
+    post:
+      tags:
+        - organizers
+      summary: extends the starting date of a schedule
+      operationId: extendStartingDate
+      description: |
+        extends the starting date of a schedule
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters: 
+      - in: query
+        name: scheduleId
+        description: the id of the schedule you wish to extend
+        required: true
+        type: string
+      - in: body
+        name: extendTo
+        description: the ammount of time you wish to extend to
+        schema:
+          type: string
+          format: date
+      - in: query
+        name: secretCode
+        description: access code for schedule
+        type: string
+      responses:
+        200:
+          description: succsesfully extended
+        400:
+          description: invalid scheduleId
+        420:
+          description: invalid date
+        421:
+          description: incorrect secret code
+      
+  /searchOpenTimeSlot:
+    get:
+      tags:
+        - participants
+      summary: gets all the open timeslots
+      operationId: searchOpenTimeSlot
+      description: |
+        gets all the open timeslots
+      produces:
+      - application/json
+      responses:
+        200:
+          description: succsesfully searched
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/TimeSlot'
+        400:
+          description: unkown error
+       
+      
+  /deleteOldSchedules:
+    post:
+      tags:
+        - admins
+      summary: deletes all previously created schedules
+      operationId: deleteOldSchedules
+      description: deletes older schedules from the database
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - in: query
+        name: dayLimit
+        description: number of days for which any schedulers older than will be deleted 
+        type: integer
+    
+      responses:
+        201:
+          description: Old schedules deleted
+        400:
+          description: unkown error
+
+          
+  /ReportActivity:
+    get:
+      tags:
+        - admins
+      summary: shows previously created schedules
+      operationId: reportActivity
+      description: |
+        shows created schedules
+      produces:
+      - application/json
+      responses:
+        200:
+          description: list of created schedules from the database returned
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Schedule'
+            
+        
+        
+      
+   
+      
+      
+  
+  
+definitions:
+        
+  Meeting:
+    required:
+    - users
+    - password
+    - id
+    properties:
+      users:
+        type: array
+        items:
+          type: string
+        minItems: 1
+        example: ["Rocket Racoon"]
+      password:
+        type: string
+        example: "97ghf7"
+      id:
+        type: string
+        example: "89P13"
+        
+  TimeSlot:
+    required:
+    - meeting
+    - open
+    - time
+    - id
+    properties:
+      meeting:
+        type: array
+        items:
+          $ref: '#/definitions/Meeting'
+      open:
+        type: boolean
+        example: true
+      time: 
+        type: string
+        format: $date-time
+        example: 2016-08-29T09:12:33.001Z
+      id:
+        type: string
+        example: "ct7567"
+        
+  Day:
+    required:
+    - timeslots
+    - weekday
+    - date
+    properties:
+      timeslots:
+        type: array
+        items: 
+          $ref: '#/definitions/TimeSlot'
+      weekday:
+        type: integer
+        example: 5
+      date:
+        type: string
+        format: date
+        example: "2016-08-29"
+        
+  Week:
+    required:
+    - days
+    - weekNum
+    properties:
+      days:
+        type: array
+        items:
+          $ref: '#/definitions/Day'
+      weekNum:
+        type: integer
+        example: 7
+  
+  Schedule:
+    required:
+    - startDate
+    - endDate
+    - startTime
+    - endTime
+    - weeks
+    - id
+    - password
+    - minPerTimeSlot
+    properties:
+      startDate: 
+        type: string
+        format: date
+        example: "2018-3-26"
+      endDate:
+        type: string
+        format: date
+        example: "2018-3-30"
+      startTime:
+        type: string
+        format: date-time
+        example: "19:30"
+      endTime:
+        type: string
+        format: date-time
+        example: "19:30"  
+      weeks:
+        type: array
+        items: 
+          $ref: '#/definitions/Week'
+      id: 
+        type: string
+        example: "8uhfdhh"
+      password:
+        type: string
+        example: "8ahs8903"
+      minPerTimeSlot:
+        type: integer
+        example: 15
+        
+  MeetingScheduler:
+    required: 
+    - schedules
+    properties:
+      startDate:
+        type: array
+        items: 
+          $ref: '#/definitions/Schedule'
+        
+        
+  
+        
+      
+  
+    
+    
+      
+      
+        
+ 
+    
+# Added by API Auto Mocking Plugin
+host: virtserver.swaggerhub.com
+basePath: /IcePhoenix295/YildunGAPI/1.0.0
+schemes:
+ - https
