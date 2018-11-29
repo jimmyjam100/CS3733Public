@@ -1,15 +1,8 @@
 <html>
 <head>
 <script type="text/javascript">
-var add_url = "https://0olnn4l1oa.execute-api.us-east-2.amazonaws.com/Alpha/calculator";
 var create_url = "https://7au48di44j.execute-api.us-east-2.amazonaws.com/Alpha/createschedule"
-function displayWeek(){
-	var weekDisplay = document.getElementById('weekDisplay');
-	var addString = "";
-	
-	weekDisplay.innerHTML = "<a> hi </a>";
-}
-function processResponse(arg1, arg2, result) {
+function processResponse(result) {
   // Can grab any DIV or SPAN HTML element and can then manipulate its
   // contents dynamically via javascript
   console.log("result:" + result);
@@ -20,34 +13,6 @@ function processResponse(arg1, arg2, result) {
   // Update computation result
   var weekDisplay = document.getElementById('schedList');
   weekDisplay.innerHTML = "<tr> <td>" + computation + "</td> </tr>";
-}
-function handleClick(e) {
-  var arg1 = 5;
-  var arg2 = 4;
-
-  var data = {};
-  data["arg1"] = 5;
-  data["arg2"] = 4;
-
-  var js = JSON.stringify(data);
-  console.log("JS:" + js);
-  var xhr = new XMLHttpRequest();
-  xhr.open("POST", add_url, true);
-
-  // send the collected data as JSON
-  xhr.send(js);
-
-  // This will process results and update HTML as appropriate. 
-  xhr.onloadend = function () {
-    console.log(xhr);
-    console.log(xhr.request);
-    if (xhr.readyState == XMLHttpRequest.DONE) {
-      console.log ("XHR:" + xhr.responseText);
-      processResponse(arg1, arg2, xhr.responseText);
-    } else {
-      processResponse(arg1, arg2, "N/A");
-    }
-  };
 }
 function handleCreate(e) {
   var name = document.getElementById("name").value;
@@ -79,9 +44,9 @@ function handleCreate(e) {
     console.log(xhr.request);
     if (xhr.readyState == XMLHttpRequest.DONE) {
       console.log ("XHR:" + xhr.responseText);
-      processResponse(4, 5, xhr.responseText);
+      processResponse(xhr.responseText);
     } else {
-      processResponse(4, 5, "N/A");
+      processResponse("N/A");
     }
   };
 }
@@ -89,7 +54,7 @@ function handleCreate(e) {
 </script>
 </head>
 
-<body onload="displayWeek()">
+<body>
 <p>
 <a>name</a>
 <input id="name"></input>
@@ -131,17 +96,10 @@ no schedule detected
 <input placeholder="Enter Week"></input>
 <button>Display</button>
 </p>
-<input id="result"/>
 <p>
 <table id='weekDisplay'>
 
 </table>
 </p>
-
-<script>
-for(i = 0; i < 5; i++){
-	document.write("<a>hi" + i + "</a>");
-}
-</script>
 </body>
 </html>
