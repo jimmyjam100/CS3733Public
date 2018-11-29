@@ -1,0 +1,44 @@
+<!-- 
+Psuedocode
+rows = (end_time-start_time)/slot_size;
+start = start_day+(week*5);
+for (i = start; i != start || i%5 != 0; i++) {
+  for (j = 0; j < rows; j++) {
+    table[i%5][j] = json[i][j];
+  }
+}
+
+timeslotList
+startIndex
+name
+
+-->
+<script type="text/javascript">
+
+  var weekIn = document.getElementById('weekIn');
+  var table = document.getElementById('weekDisplay');
+  var js = JSON.parse(result);
+  
+  var timeslotList = js.timeslotList;
+  var week = weekIn.week;
+  
+  var day = week?0:js.startIndex;
+  var index = week? 0 : ((week-1)*5) + (5-js.startIndex);
+  
+  while (day < 5 && index < timeslotList.length) {
+    for (var timeslot = 0; timeslot < timeslotList[index].length; timeslot++) {
+      var blockHTML;
+      var blockData = timeslotList[index][timeslot];
+      if (blockData.open) {
+         blockHTML = "<p>Time: " + blockData.hour + ":"
+          + blockData.minute + "\n</p><button>Sign Up</button>";
+      }
+      else {
+        blockHTML = "<p>Closed</p>";
+      }
+      table.rows[day].cells[timeslot].innerHTML = blockHTML;
+    }
+    day++;
+    index++;
+  }
+</script>
