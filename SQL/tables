@@ -4,8 +4,11 @@ increment by 1;
 
 create table Schedules (
   id number,
+  name varchar2(20), 
   secret_code char(20),
   created date,
+  start_time num,
+  end_time num,
   slot_size number,
   constraint pk_schedules primary key id,
   constraint slot_range check (slot_size in (10, 15, 20, 30, 60))
