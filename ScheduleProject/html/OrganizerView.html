@@ -2,6 +2,7 @@
 <head>
 <script type="text/javascript">
 var add_url = "https://0olnn4l1oa.execute-api.us-east-2.amazonaws.com/Alpha/calculator";
+var create_url = "https://7au48di44j.execute-api.us-east-2.amazonaws.com/Alpha/createschedule"
 function displayWeek(){
 	var weekDisplay = document.getElementById('weekDisplay');
 	var addString = "";
@@ -14,11 +15,11 @@ function processResponse(arg1, arg2, result) {
   console.log("result:" + result);
   var js = JSON.parse(result);
 
-  var computation = js["value"];
+  var computation = js["response"];
 
   // Update computation result
-  var weekDisplay = document.getElementById('result');
-  weekDisplay.value = computation;
+  var weekDisplay = document.getElementById('schedList');
+  weekDisplay.innerHTML = "<tr> <td>" + computation + "</td> </tr>";
 }
 function handleClick(e) {
   var arg1 = 5;
@@ -48,29 +49,67 @@ function handleClick(e) {
     }
   };
 }
+function handleCreate(e) {
+  var name = document.getElementById("name").value;
+  var startDate = document.getElementById("startDate").value;
+  var endDate = document.getElementById("endDate").value;
+  var startTime = document.getElementById("startTime").value;
+  var endTime = document.getElementById("endTime").value;
+  var timeslotLen = parseInt(document.getElementById("timeslotLen").value);
+  
+  var data = {};
+  data["name"] = name;
+  data["startDate"] = startDate;
+  data["endDate"] = endDate;
+  data["startTime"] = startTime;
+  data["endTime"] = endTime;
+  data["timeslotLen"] = timeslotLen
+
+  var js = JSON.stringify(data);
+  console.log("JS:" + js);
+  var xhr = new XMLHttpRequest();
+  xhr.open("POST", create_url, true);
+
+  // send the collected data as JSON
+  xhr.send(js);
+
+  // This will process results and update HTML as appropriate. 
+  xhr.onloadend = function () {
+    console.log(xhr);
+    console.log(xhr.request);
+    if (xhr.readyState == XMLHttpRequest.DONE) {
+      console.log ("XHR:" + xhr.responseText);
+      processResponse(4, 5, xhr.responseText);
+    } else {
+      processResponse(4, 5, "N/A");
+    }
+  };
+}
 
 </script>
 </head>
 
 <body onload="displayWeek()">
 <p>
+<a>name</a>
+<input id="name"></input>
 <a>start date</a>
-<input type="date"></input>
+<input type="date" id="startDate"></input>
 
 <a>end date</a>
-<input type="date"></input>
+<input type="date" id="endDate"></input>
 <a>start time</a>
-<input type="time"></input>
+<input type="time" id="startTime"></input>
 <a>end time</a>
-<input type="time"></input>
-<a>timeslot len:</a>
-<select>
-	<option value = "10">10 min</option>
-	<option value = "15">15 min</option>
-	<option value = "30">30 min</option>
-	<option value = "60">60 min</option>
+<input type="time" id="endTime"></input>
+<a>timeslot len (min)</a>
+<select id="timeslotLen">
+	<option value = "10">10</option>
+	<option value = "15">15</option>
+	<option value = "30">30</option>
+	<option value = "60">60</option>
 </select>
-<input type="button" value="Create Schedule"  onClick="JavaScript:handleClick(this)">
+<input type="button" value="Create Schedule"  onClick="JavaScript:handleCreate(this)">
 </p>
 <p>
 Schedule List:
@@ -84,7 +123,7 @@ no schedule detected
 </p>
 
 <p>
-<button>add time to begginging</button>
+<button>add time to begining</button>
 <button border-color="red">Delete Schedule</button>
 <button>add time to end</button>
 </p>
@@ -92,7 +131,7 @@ no schedule detected
 <input placeholder="Enter Week"></input>
 <button>Display</button>
 </p>
-<input id="result" readonly/>
+<input id="result"/>
 <p>
 <table id='weekDisplay'>
 

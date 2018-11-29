@@ -6,7 +6,9 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.text.SimpleDateFormat;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.Scanner;
 
@@ -38,14 +40,15 @@ public class LambdaFunctionHandler implements RequestStreamHandler {
 
 	public LambdaLogger logger = null;
 	
-	boolean createSchedule(String n, Date sD, Date eD, LocalTime sT, LocalTime eT, int timeSlotL) throws Exception {
-		if (logger != null) { logger.log("in createConstant"); }
+	boolean createSchedule(String n, Date sD, Date eD, LocalTime sT, LocalTime eT, int timeslotL) throws Exception {
+		/*if (logger != null) { logger.log("in createConstant"); }
 		ScheduleDAO dao = new ScheduleDAO();
 		
 		// check if present
 		//Schedule exist = dao.getSchedule(n);
 		Schedule sched = new Schedule (sD);
-		return dao.addSchedule(sched);
+		return dao.addSchedule(sched);*/
+		return true;
 	}
 
 	// handle to our s3 storage
@@ -85,6 +88,7 @@ public class LambdaFunctionHandler implements RequestStreamHandler {
 		}
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	public void handleRequest(InputStream input, OutputStream output, Context context) throws IOException {
 		LambdaLogger logger = context.getLogger();
@@ -134,7 +138,7 @@ public class LambdaFunctionHandler implements RequestStreamHandler {
 			CreateScheduleRequest req = new Gson().fromJson(body, CreateScheduleRequest.class);
 			logger.log(req.toString());
 			try {
-				createSchedule(req.name, req.startDate, req.endDate, req.startTime, req.endTime, req.timeSlotLen);
+				createSchedule(req.name, new SimpleDateFormat("yyyy-MM-dd").parse(req.startDate), new SimpleDateFormat("yyyy-MM-dd").parse(req.endDate), LocalTime.parse(req.startTime, DateTimeFormatter.ofPattern("HH:mm")), LocalTime.parse(req.endTime, DateTimeFormatter.ofPattern("HH:mm")), req.timeslotLen);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -143,7 +147,7 @@ public class LambdaFunctionHandler implements RequestStreamHandler {
 			
 
 			// compute proper response
-			CreateScheduleResponse resp = new CreateScheduleResponse("done", 200);
+			CreateScheduleResponse resp = new CreateScheduleResponse(req.name, 200);
 	        responseJson.put("body", new Gson().toJson(resp));  
 		}
 		

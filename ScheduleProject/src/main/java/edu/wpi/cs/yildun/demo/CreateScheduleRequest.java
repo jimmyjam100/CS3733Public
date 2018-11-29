@@ -5,23 +5,23 @@ import java.util.Date;
 
 public class CreateScheduleRequest {
 	String name;
-	Date startDate;
-	Date endDate;
-	LocalTime startTime;
-	LocalTime endTime;
-	int timeSlotLen;
+	String startDate;
+	String endDate;
+	String startTime;
+	String endTime;
+	int timeslotLen;
 	
-	public CreateScheduleRequest(String n, Date sD, Date eD, LocalTime sT, LocalTime eT, int timeSlotL) {
-		name = n;
-		startDate = sD;
-		endDate = eD;
-		startTime = sT;
-		endTime = eT;
-		timeSlotLen = timeSlotL;
+	public CreateScheduleRequest(String name, String startDate, String endDate, String startTime, String endTime, int timeslotLen) {
+		this.name = name;
+		this.startDate = startDate;
+		this.endDate = endDate;
+		this.startTime = startTime;
+		this.endTime = endTime;
+		this.timeslotLen = timeslotLen;
 	}
 	
 	public String toString() {
-		return "CreateSchedule("+startDate.toString()+", " + endDate.toString() + ", " + ", " + startTime.toString() + ", " + endTime.toString() + ", " + timeSlotLen + ")";
+		return "CreateSchedule(" + startDate + ", " + endDate + ", " + ", " + startTime + ", " + endTime + ", " + timeslotLen + ")";
 	}
 
 }
