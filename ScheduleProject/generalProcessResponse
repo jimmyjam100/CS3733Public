@@ -1,0 +1,39 @@
+function processResponse(result) {
+  var table = document.getElementById('weekDisplay');
+  var js = JSON.parse(result);
+  
+  var week = document.getElementById('week').input;
+  var timeslotList  =js["timeslotList"];
+  var blockHTML = "<tr> <td> Monday </td> <td> Tuesday </td> <td> Wensday </td> <td> Thursday </td> <td> Friday </td> </tr> ";
+
+  int day;
+  int index;
+  
+  if (week) {
+    day = 0;
+    index = 5*week-js["startingIndex"]
+  }
+  else {
+   day = js["startingIndex"];
+   index = 0;
+  }
+  
+  while (day < 5 && index < timeslotList.length) {
+    blockHTML += "<tr>";
+    for (var slot = 0; slot < timeslotList[0].length; slot++) {
+      blockHTML += "<td>";
+      var data = timeslotList[index][slot];
+      blockHTML += "<p>Time: " + data["time"]["hour"] + ": " + data["time"]["minute"] + "\n</p>
+      if (data["open"]) {
+        blockHTML += "<p><button>Sign Up</button></p><p><button>Close</button></p>";
+      }
+      else {
+        blockHTML += "<p>Meeting with: " + data["user"] + "</p><p><button>Remove Meeting</button></p>"; //TODO
+      }
+      blockHTML += "</td>";
+    }
+    blockHTML += "</tr>";
+  }
+  
+  table.innerHTML = blockHTML;
+}
