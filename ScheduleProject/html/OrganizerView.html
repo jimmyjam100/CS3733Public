@@ -3,12 +3,30 @@
 <script type="text/javascript">
 var create_url = "https://7au48di44j.execute-api.us-east-2.amazonaws.com/Alpha/createschedule"
 function processResponse(result) {
+  var table = document.getElementById('weekDisplay');
+  var js = JSON.parse(result);
+  
+  var timeslotList = js["timeslotList"];
+  var blockHTML = "<tr> <td> Monday </td> <td> Tuesday </td> <td> Wensday </td> <td> Thursday </td> <td> Friday </td> </tr> ";
+  for (var timeslot = 0; timeslot < timeslotList[0].length; timeslot++) {
+  	blockHTML += "<tr>";
+    for (var day = 0; day < 5; day++) {
+      blockHTML += "<td>";
+      if (day >= js["startingIndex"]){
+        var blockData = timeslotList[day - js["startingIndex"]][timeslot];
+        blockHTML += "<p>Time: " + blockData["time"]["hour"] + ":" + blockData["time"]["minute"] + "\n</p><p><button>Sign Up</button></p><p><button>Close</button></p>";
+        //blockHTML += "hi";
+
+      }
+      blockHTML += "</td>";
+    }
+    blockHTML += "</tr>";
+  }
+  table.innerHTML = blockHTML;
   // Can grab any DIV or SPAN HTML element and can then manipulate its
   // contents dynamically via javascript
-  console.log("result:" + result);
-  var js = JSON.parse(result);
 
-  var computation = js["response"];
+  var computation = js["name"];
 
   // Update computation result
   var weekDisplay = document.getElementById('schedList');
@@ -84,7 +102,6 @@ Schedule List:
 <hr width=100%></hr>
 
 <p id="scheduleName">
-no schedule detected
 </p>
 
 <p>
@@ -97,7 +114,7 @@ no schedule detected
 <button>Display</button>
 </p>
 <p>
-<table id='weekDisplay'>
+<table id='weekDisplay' border="1">
 
 </table>
 </p>

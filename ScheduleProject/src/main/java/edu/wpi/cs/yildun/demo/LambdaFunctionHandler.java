@@ -1,6 +1,7 @@
 package edu.wpi.cs.yildun.demo;
 
 import java.io.BufferedReader;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -9,8 +10,12 @@ import java.io.OutputStreamWriter;
 import java.text.SimpleDateFormat;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoField;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Scanner;
+import java.util.List;
+import java.util.ArrayList;
 
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -28,6 +33,7 @@ import com.google.gson.Gson;
 
 import edu.wpi.cs.yidun.db.ScheduleDAO;
 import edu.wpi.cs.yidun.model.Schedule;
+import edu.wpi.cs.yidun.model.Timeslot;
 
 
 
@@ -41,6 +47,8 @@ public class LambdaFunctionHandler implements RequestStreamHandler {
 	public LambdaLogger logger = null;
 	
 	boolean createSchedule(String n, Date sD, Date eD, LocalTime sT, LocalTime eT, int timeslotL) throws Exception {
+		
+		
 		/*if (logger != null) { logger.log("in createConstant"); }
 		ScheduleDAO dao = new ScheduleDAO();
 		
@@ -50,6 +58,7 @@ public class LambdaFunctionHandler implements RequestStreamHandler {
 		return dao.addSchedule(sched);*/
 		return true;
 	}
+	
 
 	// handle to our s3 storage
 	private AmazonS3 s3 = AmazonS3ClientBuilder.standard()
@@ -144,10 +153,31 @@ public class LambdaFunctionHandler implements RequestStreamHandler {
 				e.printStackTrace();
 			}
 
-			
+	        Calendar calendar = Calendar.getInstance();
+	        try {
+				calendar.setTime(new SimpleDateFormat("yyyy-MM-dd").parse(req.startDate));
+			} catch (java.text.ParseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+	        int startDayOfWeek = (calendar.get(Calendar.DAY_OF_WEEK)) - 2;
+	        if(startDayOfWeek < 0) {
+	        	startDayOfWeek += 7;
+	        }
+	        int startMin = LocalTime.parse(req.startTime, DateTimeFormatter.ofPattern("HH:mm")).get(ChronoField.MINUTE_OF_DAY);
+	        int endMin = LocalTime.parse(req.endTime, DateTimeFormatter.ofPattern("HH:mm")).get(ChronoField.MINUTE_OF_DAY);
+	        List<List<Timeslot>> returns = new ArrayList<List<Timeslot>>();
+	        
+	        for(int i = startDayOfWeek; i < 5; i++) {
+	        	List<Timeslot> temp = new ArrayList<Timeslot>();
+	        	for (int j = 0; j < endMin - startMin; j+=req.timeslotLen) {
+	        		temp.add(new Timeslot(true, (LocalTime.parse(req.startTime, DateTimeFormatter.ofPattern("HH:mm")).plusMinutes(j))));
+	        	}
+	        	returns.add(temp);
+	        }
 
 			// compute proper response
-			CreateScheduleResponse resp = new CreateScheduleResponse(req.name, 200);
+			CreateScheduleResponse resp = new CreateScheduleResponse(req.name, returns, startDayOfWeek, 200);
 	        responseJson.put("body", new Gson().toJson(resp));  
 		}
 		

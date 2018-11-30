@@ -19,7 +19,7 @@ public class ScheduleDAO {
     }
     
     
-    public boolean addSchedule(Schedule sched) throws Exception {
+    /*public boolean addSchedule(Schedule sched) throws Exception {
         try {
             PreparedStatement ps = conn.prepareStatement("SELECT * FROM Schedules WHERE date = ?;");
             ps.setDate(1, (Date) sched.date);
@@ -45,6 +45,6 @@ public class ScheduleDAO {
     private Schedule generateSchedule(ResultSet resultSet) throws Exception {
         Date d  = resultSet.getDate("date");
         return new Schedule(d);
-    }
+    }*/
 
 }

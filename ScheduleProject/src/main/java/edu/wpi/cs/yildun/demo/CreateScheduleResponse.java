@@ -1,22 +1,30 @@
 package edu.wpi.cs.yildun.demo;
+import edu.wpi.cs.yidun.model.Timeslot;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class CreateScheduleResponse {
-	String response;
+	String name;
+	List<List<Timeslot>> timeslotList;
+	int startingIndex;
 	int httpCode;
 	
-	public CreateScheduleResponse (String s, int code) {
-		this.response = s;
+	public CreateScheduleResponse (String name, List<List<Timeslot>> timeslotList, int startingIndex, int code) {
+		this.name = name;
+		this.timeslotList = timeslotList;
+		this.startingIndex = startingIndex;
+		this.httpCode = code;
+	}
+	public CreateScheduleResponse (String name, int code) {
+		this.name = name;
+		this.timeslotList = new ArrayList<List<Timeslot>>();
+		this.startingIndex = 0;
 		this.httpCode = code;
 	}
 	
-	// 200 means success
-	public CreateScheduleResponse (String s) {
-		this.response = s;
-		this.httpCode = 200;
-	}
-	
 	public String toString() {
-		return "Response(" + response + ")";
+		return "Response(" + startingIndex + ")";
 	}
 
 }
