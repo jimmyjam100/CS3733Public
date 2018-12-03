@@ -2,21 +2,26 @@ package edu.wpi.cs.yidun.model;
 
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Date;
 
 
 public class Schedule {
-	LocalTime startDate;
-	LocalTime endDate;
+	LocalTime startTime;
+	LocalTime endTime;
+	Date startDate;
+	Date endDate;
 	ArrayList<Week> weeks;
 	String name;
 	String id;
 	String password;
 	int minPerTimeslot;
 	
-	public Schedule(LocalTime startDate, LocalTime endDate, String name, String id, String password, int minPerTimeslot) {
+	public Schedule(Date startDate, Date endDate, LocalTime startTime, LocalTime endTime, String name, String id, String password, int minPerTimeslot) {
 		weeks = new ArrayList<Week>();
-		this.startDate= startDate;
-		this.endDate= endDate;
+		this.startTime= startTime;
+		this.endTime= endTime;
+		this.startDate = startDate;
+		this.endDate = endDate;
 		this.name = name;
 		this.id= id;
 		this.password= password;
@@ -44,12 +49,20 @@ public class Schedule {
 	}
 
 	//setters
-	void setStartDate(LocalTime t) {
-		startDate = t;
+	void setStartTime(LocalTime t) {
+		startTime = t;
 	}
 	
-	void setEndDate(LocalTime t) {
-		endDate = t;
+	void setEndTime(LocalTime t) {
+		endTime = t;
+	}
+	
+	void setStartDate(Date d) {
+		startDate = d;
+	}
+	
+	void setEndDate(Date d) {
+		endDate = d;
 	}
 	
 	void setName(String s) {
@@ -69,11 +82,19 @@ public class Schedule {
 	}
 	
 	//getters
-	LocalTime getStartDate() {
+	LocalTime getStartTime() {
+		return startTime;
+	}
+	
+	LocalTime getEndTime() {
+		return endTime;
+	}
+	
+	Date getStartDate() {
 		return startDate;
 	}
 	
-	LocalTime setEndDate() {
+	Date getEndDate() {
 		return endDate;
 	}
 	

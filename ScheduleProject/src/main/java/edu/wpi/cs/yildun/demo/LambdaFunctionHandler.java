@@ -47,7 +47,7 @@ public class LambdaFunctionHandler implements RequestStreamHandler {
 	public LambdaLogger logger = null;
 	
 	boolean createSchedule(String n, Date sD, Date eD, LocalTime sT, LocalTime eT, int timeslotL) throws Exception {
-		
+		//Schedule temp = new Schedule(sT, eT, )
 		
 		/*if (logger != null) { logger.log("in createConstant"); }
 		ScheduleDAO dao = new ScheduleDAO();
