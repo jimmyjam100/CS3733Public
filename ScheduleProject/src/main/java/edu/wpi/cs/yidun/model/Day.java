@@ -10,11 +10,13 @@ public class Day {
 	ArrayList<Timeslot> timeslots;
 	int weekday;
 	Date date;
+	String id;
 	
-	public Day(int weekday, Date date) {
+	public Day(int weekday, Date date, String id) {
 		timeslots = new ArrayList<Timeslot>();
 		this.weekday = weekday;
 		this.date = date;
+		this.id = id;
 	}
 	
 	public boolean closeTime(LocalTime t){
@@ -44,6 +46,9 @@ public class Day {
 	public void setDate(Date d) {
 		date = d;
 	}
+	public void setId(String id) {
+		this.id = id;
+	}
 	
 	//getters
 	
@@ -57,5 +62,8 @@ public class Day {
 	
 	public ArrayList<Timeslot> getTimeslots() {
 		return timeslots;
+	}
+	public String getId() {
+		return id;
 	}
 }

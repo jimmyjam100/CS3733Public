@@ -7,10 +7,12 @@ public class Week {
 
 	ArrayList<Day> days;
 	int weekNum;
+	String id;
 	
-	public Week(int weekNum) {
+	public Week(int weekNum, String id) {
 		days = new ArrayList<Day>();
-		weekNum = this.weekNum;
+		this.weekNum = weekNum;
+		this.id = id;
 	}
 	
 	public boolean closeTime(LocalTime t){
@@ -31,6 +33,9 @@ public class Week {
 	public void setWeekNum(int i) {
 		weekNum = i;
 	}
+	public void setId(String id) {
+		this.id = id;
+	}
 	
 	//getters
 	public int getWeekNum() {
@@ -39,6 +44,10 @@ public class Week {
 	
 	public ArrayList<Day> getDays(){
 		return days;
+	}
+	
+	public String getId() {
+		return id;
 	}
 	
 	public void addDay(Day d) {

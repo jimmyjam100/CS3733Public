@@ -87,9 +87,9 @@ public class LambdaFunctionHandler implements RequestStreamHandler {
 		Calendar cal = Calendar.getInstance();
 		cal.setTime(sD);
 		for(int i = 0; cal.getTime().before(eD); i++) {
-			Week tempWeek = new Week(i);
+			Week tempWeek = new Week(i, randId());
 			for (int j = (cal.get(Calendar.DAY_OF_WEEK)) - 2; (cal.get(Calendar.DAY_OF_WEEK)) - 2 < 5 && cal.getTime().before(eD); j++) {
-				Day tempDay = new Day(j, cal.getTime());
+				Day tempDay = new Day(j, cal.getTime(), randId());
 				
 		        int startMin = sT.get(ChronoField.MINUTE_OF_DAY);
 		        int endMin = eT.get(ChronoField.MINUTE_OF_DAY);
