@@ -13,7 +13,7 @@ public class Week {
 		weekNum = this.weekNum;
 	}
 	
-	boolean closeTime(LocalTime t){
+	public boolean closeTime(LocalTime t){
 		boolean allClosed = true;
 		for (Day d : days) {
 			if (!d.closeTime(t)) {
@@ -23,21 +23,25 @@ public class Week {
 		return allClosed;
 	}
 	
-	boolean closeDay(int weekday){
+	public boolean closeDay(int weekday){
 		return days.get(weekday).closeDay();
 	}
 	
 	//setters
-	void setWeekNum(int i) {
+	public void setWeekNum(int i) {
 		weekNum = i;
 	}
 	
 	//getters
-	int getWeekNum() {
+	public int getWeekNum() {
 		return weekNum;
 	}
 	
-	ArrayList<Day> getDays(){
+	public ArrayList<Day> getDays(){
 		return days;
+	}
+	
+	public void addDay(Day d) {
+		days.add(d);
 	}
 }

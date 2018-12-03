@@ -28,7 +28,7 @@ public class Schedule {
 		this.minPerTimeslot= minPerTimeslot;
 	}
 	
-	boolean closeWeekday(int weekday){
+	public boolean closeWeekday(int weekday){
 		boolean allClosed = true;
 		for (Week w : weeks) {
 			if (!w.closeDay(weekday)) {
@@ -38,7 +38,7 @@ public class Schedule {
 		return allClosed;
 	}
 	
-	boolean closeTime(LocalTime t){
+	public boolean closeTime(LocalTime t){
 		boolean allClosed = true;
 		for (Week w : weeks) {
 			if (!w.closeTime(t)) {
@@ -49,72 +49,72 @@ public class Schedule {
 	}
 
 	//setters
-	void setStartTime(LocalTime t) {
+	public void setStartTime(LocalTime t) {
 		startTime = t;
 	}
 	
-	void setEndTime(LocalTime t) {
+	public void setEndTime(LocalTime t) {
 		endTime = t;
 	}
 	
-	void setStartDate(Date d) {
+	public void setStartDate(Date d) {
 		startDate = d;
 	}
 	
-	void setEndDate(Date d) {
+	public void setEndDate(Date d) {
 		endDate = d;
 	}
 	
-	void setName(String s) {
+	public void setName(String s) {
 		name = s;
 	}
 	
-	void setId(String s) {
+	public void setId(String s) {
 		id = s;
 	}
 	
-	void setPassword(String s) {
+	public void setPassword(String s) {
 		password = s;
 	}
 	
-	void setMinPerTimeslot(int i) {
+	public void setMinPerTimeslot(int i) {
 		minPerTimeslot = i;
 	}
 	
 	//getters
-	LocalTime getStartTime() {
+	public LocalTime getStartTime() {
 		return startTime;
 	}
 	
-	LocalTime getEndTime() {
+	public LocalTime getEndTime() {
 		return endTime;
 	}
 	
-	Date getStartDate() {
+	public Date getStartDate() {
 		return startDate;
 	}
 	
-	Date getEndDate() {
+	public Date getEndDate() {
 		return endDate;
 	}
 	
-	ArrayList<Week> getWeeks() {
+	public ArrayList<Week> getWeeks() {
 		return weeks;
 	}
 	
-	String getName() {
+	public String getName() {
 		return name;
 	}
 	
-	String getId() {
+	public String getId() {
 		return id;
 	}
 	
-	String getPassword() {
+	public String getPassword() {
 		return password;
 	}
 	
-	int getMinPerTimeslot() {
+	public int getMinPerTimeslot() {
 		return minPerTimeslot;
 	}
 }

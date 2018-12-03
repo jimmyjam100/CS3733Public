@@ -13,10 +13,12 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoField;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.Scanner;
 import java.util.List;
 import java.util.ArrayList;
 
+import org.joda.time.Weeks;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -32,8 +34,10 @@ import com.amazonaws.services.s3.model.S3ObjectInputStream;
 import com.google.gson.Gson;
 
 import edu.wpi.cs.yidun.db.ScheduleDAO;
+import edu.wpi.cs.yidun.model.Day;
 import edu.wpi.cs.yidun.model.Schedule;
 import edu.wpi.cs.yidun.model.Timeslot;
+import edu.wpi.cs.yidun.model.Week;
 
 
 
@@ -46,8 +50,65 @@ public class LambdaFunctionHandler implements RequestStreamHandler {
 
 	public LambdaLogger logger = null;
 	
+	public static Date resetTime (Date d) {
+	    Calendar cal = new GregorianCalendar();
+	    cal.setTime(d);
+	    cal.set(Calendar.HOUR_OF_DAY, 0);
+	    cal.set(Calendar.MINUTE, 0);
+	    cal.set(Calendar.SECOND, 0);
+	    cal.set(Calendar.MILLISECOND, 0);
+	    return cal.getTime();
+	}
+	
+	public static int getWeeksBetween (Date a, Date b) {
+	    if (b.before(a)) {
+	        return -getWeeksBetween(b, a);
+	    }
+	    a = resetTime(a);
+	    b = resetTime(b);
+
+	    Calendar cal = new GregorianCalendar();
+	    cal.setTime(a);
+	    int weeks = 0;
+	    while (cal.getTime().before(b)) {
+	        // add another week
+	        cal.add(Calendar.WEEK_OF_YEAR, 1);
+	        weeks++;
+	    }
+	    return weeks;
+	}
+	
+	String randId() {
+		return "randId";
+	}
+	
+	Schedule newSchedule(String n, Date sD, Date eD, LocalTime sT, LocalTime eT, int timeslotL) {
+		Schedule temp = new Schedule(sD, eD, sT, eT, n, randId(), "password", timeslotL);
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(sD);
+		for(int i = 0; cal.getTime().before(eD); i++) {
+			Week tempWeek = new Week(i);
+			for (int j = (cal.get(Calendar.DAY_OF_WEEK)) - 2; (cal.get(Calendar.DAY_OF_WEEK)) - 2 < 5 && cal.getTime().before(eD); j++) {
+				Day tempDay = new Day(j, cal.getTime());
+				
+		        int startMin = sT.get(ChronoField.MINUTE_OF_DAY);
+		        int endMin = eT.get(ChronoField.MINUTE_OF_DAY);
+		        for (int k = 0; k < endMin - startMin; k+=timeslotL) {
+		       		tempDay.getTimeslots().add(new Timeslot(true, (sT.plusMinutes(j))));
+		       	}
+				tempWeek.addDay(tempDay);
+				cal.add(Calendar.DATE, 1);
+			}
+			while(cal.get(Calendar.DAY_OF_WEEK) - 2 != 0) {
+				cal.add(Calendar.DATE, 1);
+			}
+			temp.getWeeks().add(tempWeek);
+		}
+		return temp;
+	}
+	
 	boolean createSchedule(String n, Date sD, Date eD, LocalTime sT, LocalTime eT, int timeslotL) throws Exception {
-		//Schedule temp = new Schedule(sT, eT, )
+		Schedule temp = newSchedule(n, sD, eD, sT, eT, timeslotL);
 		
 		/*if (logger != null) { logger.log("in createConstant"); }
 		ScheduleDAO dao = new ScheduleDAO();
@@ -146,8 +207,9 @@ public class LambdaFunctionHandler implements RequestStreamHandler {
 		if (!processed) {
 			CreateScheduleRequest req = new Gson().fromJson(body, CreateScheduleRequest.class);
 			logger.log(req.toString());
+			Schedule tempSched = null;
 			try {
-				createSchedule(req.name, new SimpleDateFormat("yyyy-MM-dd").parse(req.startDate), new SimpleDateFormat("yyyy-MM-dd").parse(req.endDate), LocalTime.parse(req.startTime, DateTimeFormatter.ofPattern("HH:mm")), LocalTime.parse(req.endTime, DateTimeFormatter.ofPattern("HH:mm")), req.timeslotLen);
+				tempSched = newSchedule(req.name, new SimpleDateFormat("yyyy-MM-dd").parse(req.startDate), new SimpleDateFormat("yyyy-MM-dd").parse(req.endDate), LocalTime.parse(req.startTime, DateTimeFormatter.ofPattern("HH:mm")), LocalTime.parse(req.endTime, DateTimeFormatter.ofPattern("HH:mm")), req.timeslotLen);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -177,7 +239,7 @@ public class LambdaFunctionHandler implements RequestStreamHandler {
 	        }
 
 			// compute proper response
-			CreateScheduleResponse resp = new CreateScheduleResponse(req.name, returns, startDayOfWeek, 200);
+			CreateScheduleResponse resp = new CreateScheduleResponse(req.name, returns, startDayOfWeek, tempSched, 200);
 	        responseJson.put("body", new Gson().toJson(resp));  
 		}
 		

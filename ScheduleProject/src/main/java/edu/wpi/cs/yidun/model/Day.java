@@ -17,7 +17,7 @@ public class Day {
 		this.date = date;
 	}
 	
-	boolean closeTime(LocalTime t){
+	public boolean closeTime(LocalTime t){
 		for (Timeslot slot : timeslots) {
 			if (slot.time == t) {
 				return slot.close();
@@ -26,7 +26,7 @@ public class Day {
 		return false;
 	}
 	
-	boolean closeDay(){
+	public boolean closeDay(){
 		boolean allClosed = true;
 		for (Timeslot slot : timeslots) {
 			if (!slot.close()) {
@@ -37,25 +37,25 @@ public class Day {
 	}
 
 	//setters
-	void setWeekday(int i) {
+	public void setWeekday(int i) {
 		weekday = i;
 	}
 	
-	void setDate(Date d) {
+	public void setDate(Date d) {
 		date = d;
 	}
 	
 	//getters
 	
-	int getWeekday() {
+	public int getWeekday() {
 		return weekday;
 	}
 	
-	Date getDate() {
+	public Date getDate() {
 		return date;
 	}
 	
-	ArrayList<Timeslot> getTimeslots() {
+	public ArrayList<Timeslot> getTimeslots() {
 		return timeslots;
 	}
 }
