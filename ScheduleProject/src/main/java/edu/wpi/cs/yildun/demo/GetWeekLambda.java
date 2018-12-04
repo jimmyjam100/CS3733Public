@@ -1,6 +1,7 @@
 package edu.wpi.cs.yildun.demo;
 
 import java.io.BufferedReader;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -29,15 +30,13 @@ import edu.wpi.cs.yidun.model.Schedule;
 import edu.wpi.cs.yidun.model.Timeslot;
 import edu.wpi.cs.yidun.model.Week;
 
+import edu.wpi.cs.yidun.db.ScheduleDAO;
+
 public class GetWeekLambda implements RequestStreamHandler {
 	
-	
-	Schedule getSchedule(String id) { //TODO: turn this function into an SQL request
-		return null;
-	}
-	
-	Week getWeek(String id, Date d) {
-		Schedule sched = getSchedule(id);
+	Week getWeek(String id, Date d) throws NumberFormatException, Exception {
+		ScheduleDAO dao = new ScheduleDAO();
+		Schedule sched = dao.getSchedule(Integer.parseInt(id));
 		for(Week w : sched.getWeeks()) {
 			for(Day day: w.getDays()) {
 				if (day.getDate().equals(d)) {
@@ -99,6 +98,12 @@ public class GetWeekLambda implements RequestStreamHandler {
 			try {
 				week = getWeek(req.schedId, new SimpleDateFormat("yyyy-MM-dd").parse(req.date));
 			} catch (java.text.ParseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (NumberFormatException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
