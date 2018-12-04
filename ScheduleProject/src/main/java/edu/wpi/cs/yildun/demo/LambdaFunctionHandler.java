@@ -108,6 +108,11 @@ public class LambdaFunctionHandler implements RequestStreamHandler {
 		return temp;
 	}
 	
+	void createSchedule(Schedule sched) throws Exception {
+		ScheduleDAO dao = new ScheduleDAO();
+		dao.addSchedule(sched);
+	}
+	
 	boolean createSchedule(String n, Date sD, Date eD, LocalTime sT, LocalTime eT, int timeslotL) throws Exception {
 		Schedule temp = newSchedule(n, sD, eD, sT, eT, timeslotL);
 		
@@ -187,7 +192,7 @@ public class LambdaFunctionHandler implements RequestStreamHandler {
 			String method = (String) event.get("httpMethod");
 			if (method != null && method.equalsIgnoreCase("OPTIONS")) {
 				logger.log("Options request");
-				response = new CreateScheduleResponse("done", 200);  // OPTIONS needs a 200 response
+				response = new CreateScheduleResponse(null, 200);  // OPTIONS needs a 200 response
 		        responseJson.put("body", new Gson().toJson(response));
 		        processed = true;
 		        body = null;
@@ -199,7 +204,7 @@ public class LambdaFunctionHandler implements RequestStreamHandler {
 			}
 		} catch (ParseException pe) {
 			logger.log(pe.toString());
-			response = new CreateScheduleResponse("done", 422);  // unable to process input
+			response = new CreateScheduleResponse(null, 422);  // unable to process input
 	        responseJson.put("body", new Gson().toJson(response));
 	        processed = true;
 	        body = null;
@@ -211,36 +216,18 @@ public class LambdaFunctionHandler implements RequestStreamHandler {
 			Schedule tempSched = null;
 			try {
 				tempSched = newSchedule(req.name, new SimpleDateFormat("yyyy-MM-dd").parse(req.startDate), new SimpleDateFormat("yyyy-MM-dd").parse(req.endDate), LocalTime.parse(req.startTime, DateTimeFormatter.ofPattern("HH:mm")), LocalTime.parse(req.endTime, DateTimeFormatter.ofPattern("HH:mm")), req.timeslotLen);
+				createSchedule(tempSched);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-
-	        Calendar calendar = Calendar.getInstance();
-	        try {
-				calendar.setTime(new SimpleDateFormat("yyyy-MM-dd").parse(req.startDate));
-			} catch (java.text.ParseException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+			CreateScheduleResponse resp;
+			if(tempSched == null) {
+				resp = new CreateScheduleResponse(null, 400);
 			}
-	        int startDayOfWeek = (calendar.get(Calendar.DAY_OF_WEEK)) - 2;
-	        if(startDayOfWeek < 0) {
-	        	startDayOfWeek += 7;
-	        }
-	        int startMin = LocalTime.parse(req.startTime, DateTimeFormatter.ofPattern("HH:mm")).get(ChronoField.MINUTE_OF_DAY);
-	        int endMin = LocalTime.parse(req.endTime, DateTimeFormatter.ofPattern("HH:mm")).get(ChronoField.MINUTE_OF_DAY);
-	        List<List<Timeslot>> returns = new ArrayList<List<Timeslot>>();
-	        
-	        for(int i = startDayOfWeek; i < 5; i++) {
-	        	List<Timeslot> temp = new ArrayList<Timeslot>();
-	        	for (int j = 0; j < endMin - startMin; j+=req.timeslotLen) {
-	        		temp.add(new Timeslot(true, (LocalTime.parse(req.startTime, DateTimeFormatter.ofPattern("HH:mm")).plusMinutes(j))));
-	        	}
-	        	returns.add(temp);
-	        }
-
-			// compute proper response
-			CreateScheduleResponse resp = new CreateScheduleResponse(req.name, returns, startDayOfWeek, tempSched, 200);
+			else {
+				resp = new CreateScheduleResponse(tempSched, 200);
+			}
 	        responseJson.put("body", new Gson().toJson(resp));  
 		}
 		
