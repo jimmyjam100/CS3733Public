@@ -1,28 +1,29 @@
-package rds;
+package edu.wpi.cs.yidun.db;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
 
 public class DatabaseUtil {
 
-	//TODO!
-	public final static String rdsMySqlDatabaseUrl = "calculatordb.cufp1nniebgu.us-east-2.rds.amazonaws.com";
-	public final static String dbUsername = "calcAdmin";
-	public final static String dbPassword = "calc:pass";
+	// These are to be configured and NEVER stored in the code.
+	// once you retrieve this code, you can update
+	public final static String rdsMySqlDatabaseUrl = "scheduledb.crabzplbxf9o.us-east-2.rds.amazonaws.com";
+	public final static String dbUsername = "master";
+	public final static String dbPassword = "passwordmaster8";
 		
 	public final static String jdbcTag = "jdbc:mysql://";
 	public final static String rdsMySqlDatabasePort = "3306";
 	public final static String multiQueries = "?allowMultiQueries=true";
 	   
-	public final static String dbName = "innodb";    // default created from MySQL WorkBench
+	public final static String dbName = "innodb";
 
 	// pooled across all usages.
-	static Connection conn;
+	private static Connection conn;
  
 	/**
 	 * Singleton access to DB connection to share resources effectively across multiple accesses.
 	 */
-	protected static Connection connect() throws Exception {
+	public static Connection connect() throws Exception {
 		if (conn != null) { return conn; }
 		
 		try {
@@ -35,6 +36,7 @@ public class DatabaseUtil {
 			//System.out.println("Database has been connected successfully.");
 			return conn;
 		} catch (Exception ex) {
+			ex.printStackTrace();
 			throw new Exception("Failed in database connection");
 		}
 	}
