@@ -4,8 +4,8 @@ import java.util.Date;
 
 public class GetWeekRequest {
 	String schedId;
-	Date date;
-	public GetWeekRequest(String schedId, Date date) {
+	String date;
+	public GetWeekRequest(String schedId, String date) {
 		this.schedId = schedId;
 		this.date = date;
 	}
