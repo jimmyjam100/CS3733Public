@@ -95,8 +95,8 @@ public class ScheduleDAO {
     		timeslotInfo.setInt(1, id);
     		ResultSet timeslotSet = timeslotInfo.executeQuery();
     		
-    		Day currentDay = new Day(0, startDate, ""); //This init shouldn't matter
-    		Week currentWeek = new Week(0, "");
+    		Day currentDay = new Day(0, startDate); //This init shouldn't matter
+    		Week currentWeek = new Week(0);
     		int dayNum = startDate.toLocalDate().getDayOfWeek().getValue(),
     				weekNum = 1;
     		
@@ -110,10 +110,10 @@ public class ScheduleDAO {
     			
     			if (time.equals(startTime)) {
     				if (dayNum%5==0) {
-    					currentWeek = new Week(weekNum++, /*TODO*/"");
+    					currentWeek = new Week(weekNum++);
     					weeks.add(currentWeek);
     				}
-    				currentDay = new Day(dayNum++, date,/*TODO*/"");
+    				currentDay = new Day(dayNum++, date);
     				currentWeek.addDay(currentDay);
     			}
     			

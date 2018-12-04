@@ -95,7 +95,7 @@ public class LambdaFunctionHandler implements RequestStreamHandler {
 		        int startMin = sT.get(ChronoField.MINUTE_OF_DAY);
 		        int endMin = eT.get(ChronoField.MINUTE_OF_DAY);
 		        for (int k = 0; k < endMin - startMin; k+=timeslotL) {
-		       		tempDay.getTimeslots().add(new Timeslot(true, (sT.plusMinutes(j)), ""));
+		       		tempDay.getTimeslots().add(new Timeslot(true, (sT.plusMinutes(j))));
 		       	}
 				tempWeek.addDay(tempDay);
 				cal.add(Calendar.DATE, 1);
@@ -234,7 +234,7 @@ public class LambdaFunctionHandler implements RequestStreamHandler {
 	        for(int i = startDayOfWeek; i < 5; i++) {
 	        	List<Timeslot> temp = new ArrayList<Timeslot>();
 	        	for (int j = 0; j < endMin - startMin; j+=req.timeslotLen) {
-	        		temp.add(new Timeslot(true, (LocalTime.parse(req.startTime, DateTimeFormatter.ofPattern("HH:mm")).plusMinutes(j)), ""));
+	        		temp.add(new Timeslot(true, (LocalTime.parse(req.startTime, DateTimeFormatter.ofPattern("HH:mm")).plusMinutes(j))));
 	        	}
 	        	returns.add(temp);
 	        }

@@ -10,11 +10,11 @@ public class Timeslot {
 	LocalTime time;
 	String id;
 	
-	public Timeslot(boolean open, LocalTime time, String id) {
+	public Timeslot(boolean open, LocalTime time) {
 		this.open = open;
 		this.time = time;
 		this.meeting = null;
-		this.id = id;
+		this.id = null;
 	}
 	
 	public boolean cancelMeeting(){

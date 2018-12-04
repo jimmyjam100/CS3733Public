@@ -1,8 +1,8 @@
 package edu.wpi.cs.yildun.demo;
 
-public class DeleteScheduleRespnse {
+public class DeleteScheduleResponse {
 	int httpCode;
-	public DeleteScheduleRespnse(int code){
+	public DeleteScheduleResponse(int code){
 		this.httpCode = code;
 	}
 	public String toString() {
