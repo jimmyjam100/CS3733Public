@@ -15,38 +15,38 @@ public class Meeting {
 	}
 	
 	
-	boolean addUser(String user) {
+	public boolean addUser(String user) {
 		if (users.contains(user)) return false;
 		users.add(user);
 		return true;
 	}
 	
 	
-	boolean removeUser(String user) {
+	public boolean removeUser(String user) {
 		if (!users.contains(user)) return false;
 		users.remove(user);
 		return true;
 	}
 	
 	//setters
-	void setPassword(String s) {
+	public void setPassword(String s) {
 		password = s;
 	}
 	
-	void setId(String s) {
+	public void setId(String s) {
 		id = s;
 	}
 	
 	//getters
-	String getPassword() {
+	public String getPassword() {
 		return password;
 	}
 	
-	String getId() {
+	public String getId() {
 		return id;
 	}
 	
-	ArrayList<String> getUsers() {
+	public ArrayList<String> getUsers() {
 		return users;
 	}
 }

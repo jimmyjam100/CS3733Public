@@ -1,5 +1,6 @@
 package edu.wpi.cs.yidun.model;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Date;
@@ -10,13 +11,11 @@ public class Day {
 	ArrayList<Timeslot> timeslots;
 	int weekday;
 	Date date;
-	String id;
 	
-	public Day(int weekday, Date date, String id) {
+	public Day(int weekday, Date date) {
 		timeslots = new ArrayList<Timeslot>();
 		this.weekday = weekday;
 		this.date = date;
-		this.id = id;
 	}
 	
 	public boolean closeTime(LocalTime t){
@@ -46,8 +45,9 @@ public class Day {
 	public void setDate(Date d) {
 		date = d;
 	}
-	public void setId(String id) {
-		this.id = id;
+	
+	public void setTimeslots(ArrayList<Timeslot> t) {
+		this.timeslots = t;
 	}
 	
 	//getters
@@ -62,8 +62,5 @@ public class Day {
 	
 	public ArrayList<Timeslot> getTimeslots() {
 		return timeslots;
-	}
-	public String getId() {
-		return id;
 	}
 }

@@ -5,63 +5,65 @@ import java.util.ArrayList;
 
 public class Timeslot {
 
-	ArrayList<Meeting> meeting;
+	Meeting meeting;
 	boolean open;
 	LocalTime time;
 	String id;
 	
-	public Timeslot(boolean open, LocalTime time) {
+	public Timeslot(boolean open, LocalTime time, String id) {
 		this.open = open;
 		this.time = time;
+		this.meeting = null;
+		this.id = id;
 	}
 	
-	boolean createMeeting(Meeting m){
-		if (!open || meeting.size() > 0) return false;
-		meeting.add(m);
+	public boolean cancelMeeting(){
+		if (this.meeting == null) {
+			return false;
+		}
+		this.meeting = null;
 		return true;
 	}
 	
-	boolean cancelMeeting(){
-		if (!open || meeting.size() != 1) return false;
-		meeting.remove(0);
-		return true;
-	}
-	
-	boolean open() {
+	public boolean open() {
 		if (open) return false;
 		open = true;
 		return true;
 	}
 	
-	boolean close() {
+	public boolean close() {
 		if (!open) return false;
 		open = false;
 		return true;
 	}
 	
 	//setters
-	void setTime(LocalTime t) {
+	public void setTime(LocalTime t) {
 		time = t;
 	}
 	
-	void setId(String s) {
+	public void setId(String s) {
 		id = s;
 	}
 	
+	public void setMeeting(Meeting m) {
+		this.meeting = m;
+	}
+	
 	//getters
-	LocalTime getTime() {
+	public LocalTime getTime() {
 		return time;
 	}
 	
-	String getId() {
+	public String getId() {
 		return id;
 	}
 
-	ArrayList<Meeting> getMeeting(){
+	public Meeting getMeeting(){
 		return meeting;
 	}
 	
-	boolean isOpen(){
+	public boolean isOpen(){
 		return open;
 	}
 }

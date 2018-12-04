@@ -1,5 +1,6 @@
 package edu.wpi.cs.yidun.model;
 
+
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Date;
@@ -79,6 +80,10 @@ public class Schedule {
 	
 	public void setMinPerTimeslot(int i) {
 		minPerTimeslot = i;
+	}
+	
+	public void setWeeks(ArrayList<Week> w) {
+		this.weeks = w;
 	}
 	
 	//getters
