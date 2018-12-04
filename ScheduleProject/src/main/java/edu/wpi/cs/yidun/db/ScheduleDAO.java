@@ -57,10 +57,10 @@ public class ScheduleDAO {
     					 
     					 slotInsert.setInt(1, id);
     					 slotInsert.setDate(2, date);
-    					 slotInsert.setString(3, null/*TODO ts.getTime().toString()*/);
-    					 slotInsert.setString(4, null/*TODO ts.isOpen()?"Y":"N"*/);
-    					 slotInsert.setString(5, null/*TODO ts.getUser()*/);
-    					 slotInsert.setString(6, null /*TODO ts.getPassword()*/);
+    					 slotInsert.setString(3, ts.getTime().toString());
+    					 slotInsert.setString(4, ts.isOpen()?"Y":"N");
+    					 slotInsert.setString(5, null /*ts.getUser()*/);
+    					 slotInsert.setString(6, null /*ts.getPassword()*/);
     					 
     					 slotInsert.executeUpdate();
     					 slotInsert.close();
@@ -107,6 +107,7 @@ public class ScheduleDAO {
     			LocalTime time = LocalTime.parse(timeslotSet.getString("startTime"));
     			boolean open = timeslotSet.getString("isOpen").equals("Y");
     			Timeslot timeslot = new Timeslot(open, time);
+    			timeslot.setId(timeslotSet.getInt("id"));
     			
     			if (time.equals(startTime)) {
     				if (dayNum%5==0) {
@@ -132,4 +133,28 @@ public class ScheduleDAO {
     	}
     }
     
+    public boolean passMatch(int id, boolean schedule, String password) throws Exception {
+    	//No set for table name
+    	PreparedStatement ps = conn.prepareStatement("SELECT pass FROM " + (schedule?"Schedules":"Timeslots") + " WHERE id=?");
+    	ps.setInt(1, id);
+    	ResultSet rs = ps.executeQuery();
+    	
+    	if (rs.next()) {
+    		return rs.getString("pass").equals(password);
+    	}
+    	
+    	rs.close();
+    	ps.close();
+    	return false;
+    }
+    public void updateTimeslot(Timeslot t) throws Exception {
+    	PreparedStatement ps = conn.prepareStatement("UPDATE Timeslots SET isOpen=?, user=?, pass=? WHERE id=?;");
+    	ps.setString(1, t.isOpen()?"Y":"N");
+    	ps.setString(2, null/*TODO t.getUser()*/);
+    	ps.setString(3, null/*TODO t.getPass()*/);
+    	ps.setInt(4, t.getId());
+    	
+    	ps.executeUpdate();
+    	ps.close();
+    }
 }

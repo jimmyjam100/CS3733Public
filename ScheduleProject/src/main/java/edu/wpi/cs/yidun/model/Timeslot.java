@@ -8,13 +8,13 @@ public class Timeslot {
 	Meeting meeting;
 	boolean open;
 	LocalTime time;
-	String id;
+	int id;
 	
 	public Timeslot(boolean open, LocalTime time) {
 		this.open = open;
 		this.time = time;
 		this.meeting = null;
-		this.id = null;
+		id = -1;
 	}
 	
 	public boolean cancelMeeting(){
@@ -42,8 +42,8 @@ public class Timeslot {
 		time = t;
 	}
 	
-	public void setId(String s) {
-		id = s;
+	public void setId(int id) {
+		this.id = id;
 	}
 	
 	public void setMeeting(Meeting m) {
@@ -55,7 +55,7 @@ public class Timeslot {
 		return time;
 	}
 	
-	public String getId() {
+	public int getId() {
 		return id;
 	}
 
