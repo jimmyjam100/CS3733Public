@@ -79,12 +79,8 @@ public class LambdaFunctionHandler implements RequestStreamHandler {
 	    return weeks;
 	}
 	
-	String randId() {
-		return "randId";
-	}
-	
 	Schedule newSchedule(String n, Date sD, Date eD, LocalTime sT, LocalTime eT, int timeslotL) {
-		Schedule temp = new Schedule(sD, eD, sT, eT, n, randId(), "password", timeslotL);
+		Schedule temp = new Schedule(sD, eD, sT, eT, n, "password", timeslotL);
 		Calendar cal = Calendar.getInstance();
 		cal.setTime(sD);
 		for(int i = 0; cal.getTime().before(eD); i++) {

@@ -5,24 +5,27 @@ import java.util.ArrayList;
 
 public class Timeslot {
 
-	Meeting meeting;
+	String user = "";
+	String password = "";
 	boolean open;
 	LocalTime time;
-	int id;
+	int id = -1;
 	
 	public Timeslot(boolean open, LocalTime time) {
 		this.open = open;
 		this.time = time;
-		this.meeting = null;
-		id = -1;
 	}
 	
 	public boolean cancelMeeting(){
-		if (this.meeting == null) {
+		if (open) {
 			return false;
 		}
-		this.meeting = null;
-		return true;
+		else {
+			open = true;
+			user = "";
+			password = "";
+			return true;
+		}
 	}
 	
 	public boolean open() {
@@ -46,8 +49,9 @@ public class Timeslot {
 		this.id = id;
 	}
 	
-	public void setMeeting(Meeting m) {
-		this.meeting = m;
+	public void makeMeeting(String user, String password) {
+		this.user = user;
+		this.password = password;
 	}
 	
 	//getters
@@ -59,8 +63,11 @@ public class Timeslot {
 		return id;
 	}
 
-	public Meeting getMeeting(){
-		return meeting;
+	public String getUser(){
+		return user;
+	}
+	public String getPassword() {
+		return password;
 	}
 	
 	public boolean isOpen(){
