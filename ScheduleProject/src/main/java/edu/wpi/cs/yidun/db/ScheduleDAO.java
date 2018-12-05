@@ -132,7 +132,7 @@ public class ScheduleDAO {
     		throw new Exception("No schedule with the given ID was obtainable.");
     	}
     }
-    
+    /*
     public boolean passMatch(int id, boolean schedule, String password) throws Exception {
     	//No set for table name
     	PreparedStatement ps = conn.prepareStatement("SELECT pass FROM " + (schedule?"Schedules":"Timeslots") + " WHERE id=?");
@@ -146,6 +146,13 @@ public class ScheduleDAO {
     	rs.close();
     	ps.close();
     	return false;
+    }
+    */
+    
+    //TODO addTimeslot(int scheudleID, Timeslot ts)
+    
+    public Timeslot getTimeslot(int id) throws Exception {
+    	return null;
     }
     public void updateTimeslot(Timeslot t) throws Exception {
     	PreparedStatement ps = conn.prepareStatement("UPDATE Timeslots SET isOpen=?, user=?, pass=? WHERE id=?;");
