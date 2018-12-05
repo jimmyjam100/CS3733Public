@@ -34,9 +34,9 @@ import edu.wpi.cs.yidun.db.ScheduleDAO;
 
 public class GetWeekLambda implements RequestStreamHandler {
 	
-	Week getWeek(String id, Date d) throws NumberFormatException, Exception {
+	Week getWeek(int id, Date d) throws NumberFormatException, Exception {
 		ScheduleDAO dao = new ScheduleDAO();
-		Schedule sched = dao.getSchedule(Integer.parseInt(id));
+		Schedule sched = dao.getSchedule(id);
 		for(Week w : sched.getWeeks()) {
 			for(Day day: w.getDays()) {
 				if (day.getDate().equals(d)) {

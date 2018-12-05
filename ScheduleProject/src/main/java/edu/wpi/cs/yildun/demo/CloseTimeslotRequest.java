@@ -2,9 +2,11 @@ package edu.wpi.cs.yildun.demo;
 
 public class CloseTimeslotRequest {
 	int id;
+	String password;
 	
-	public CloseTimeslotRequest(int id) {
+	public CloseTimeslotRequest(int id, String password) {
 		this.id = id;
+		this.password = password;
 	}
 	
 	public String toString() {
