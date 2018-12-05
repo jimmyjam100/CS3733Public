@@ -46,7 +46,7 @@ public class ScheduleDAO {
     	scheduleInsert.close();
     	
     	if (id >= 0) {
-    		//TODO s.setId(id);
+    		s.setId(id);
     		for (Week w : s.getWeeks()) {
     			for (Day d : w.getDays()) {
     				Date date = new Date(d.getDate().getTime());
@@ -59,11 +59,17 @@ public class ScheduleDAO {
     					 slotInsert.setDate(2, date);
     					 slotInsert.setString(3, ts.getTime().toString());
     					 slotInsert.setString(4, ts.isOpen()?"Y":"N");
-    					 slotInsert.setString(5, null /*ts.getUser()*/);
-    					 slotInsert.setString(6, null /*ts.getPassword()*/);
+    					 slotInsert.setString(5, ts.getUser());
+    					 slotInsert.setString(6, ts.getPassword());
     					 
     					 slotInsert.executeUpdate();
-    					 slotInsert.close();
+    					 
+    				    ResultSet slotID = slotInsert.getGeneratedKeys();
+    				    if (rs.next()) {
+    				    	ts.setId(rs.getInt("id"));
+    				    }
+    				    slotID.close();
+    					slotInsert.close();
     				}
     			}
     		}
@@ -86,7 +92,8 @@ public class ScheduleDAO {
     		String password = scheduleSet.getString("pass");
     		int minPerTimeslot = scheduleSet.getInt("minPerTimeslot");
     		
-    		Schedule schedule = new Schedule(new java.util.Date(startDate.getTime()), new java.util.Date(endDate.getTime()), startTime, endTime, name, /*TODO*/Integer.toString(id), password, minPerTimeslot);
+    		Schedule schedule = new Schedule(new java.util.Date(startDate.getTime()), new java.util.Date(endDate.getTime()), startTime, endTime, name, password, minPerTimeslot);
+    		schedule.setId(scheduleSet.getInt("id"));
     		ArrayList<Week> weeks = schedule.getWeeks();
     		weeks.clear();
     		
@@ -107,6 +114,7 @@ public class ScheduleDAO {
     			LocalTime time = LocalTime.parse(timeslotSet.getString("startTime"));
     			boolean open = timeslotSet.getString("isOpen").equals("Y");
     			Timeslot timeslot = new Timeslot(open, time);
+    			timeslot.makeMeeting(timeslotSet.getString("user"), timeslotSet.getString("pass"));
     			timeslot.setId(timeslotSet.getInt("id"));
     			
     			if (time.equals(startTime)) {
@@ -132,7 +140,7 @@ public class ScheduleDAO {
     		throw new Exception("No schedule with the given ID was obtainable.");
     	}
     }
-    
+    /*
     public boolean passMatch(int id, boolean schedule, String password) throws Exception {
     	//No set for table name
     	PreparedStatement ps = conn.prepareStatement("SELECT pass FROM " + (schedule?"Schedules":"Timeslots") + " WHERE id=?");
@@ -147,11 +155,34 @@ public class ScheduleDAO {
     	ps.close();
     	return false;
     }
+    */
+    
+    //TODO addTimeslot(int scheudleID, Timeslot ts)
+    
+    public Timeslot getTimeslot(int id) throws Exception {
+    	PreparedStatement ps = conn.prepareStatement("Select * FROM Timeslots WHERE id=?");
+    	ps.setInt(1, id);
+    	ResultSet rs = ps.executeQuery();
+    	if (rs.next()) {
+    		Date date = new Date(rs.getDate("slotDate").getTime());
+			LocalTime time = LocalTime.parse(rs.getString("startTime"));
+			boolean open = rs.getString("isOpen").equals("Y");
+			Timeslot timeslot = new Timeslot(open, time);
+			timeslot.makeMeeting(rs.getString("user"), rs.getString("pass"));
+			timeslot.setId(rs.getInt("id"));
+			rs.close();
+			ps.close();
+			return timeslot;
+    	}
+    	else {
+    		throw new Exception("No such Timeslot could be retrieved");
+    	}
+    }
     public void updateTimeslot(Timeslot t) throws Exception {
     	PreparedStatement ps = conn.prepareStatement("UPDATE Timeslots SET isOpen=?, user=?, pass=? WHERE id=?;");
     	ps.setString(1, t.isOpen()?"Y":"N");
-    	ps.setString(2, null/*TODO t.getUser()*/);
-    	ps.setString(3, null/*TODO t.getPass()*/);
+    	ps.setString(2, t.getUser());
+    	ps.setString(3, t.getPassword());
     	ps.setInt(4, t.getId());
     	
     	ps.executeUpdate();

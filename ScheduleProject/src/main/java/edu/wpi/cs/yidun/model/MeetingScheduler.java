@@ -20,9 +20,9 @@ public class MeetingScheduler {
 		}
 	}
 	
-	boolean deleteSchedule(String id) {
+	boolean deleteSchedule(int id) {
 		for (int i = 0; i < schedules.size(); i++) {
-			if (schedules.get(i).id.equals(id)) {
+			if (schedules.get(i).id == id) {
 				schedules.remove(i);
 				return true;
 			}

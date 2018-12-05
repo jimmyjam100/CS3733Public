@@ -13,18 +13,17 @@ public class Schedule {
 	Date endDate;
 	ArrayList<Week> weeks;
 	String name;
-	String id;
+	int id = -1;
 	String password;
 	int minPerTimeslot;
 	
-	public Schedule(Date startDate, Date endDate, LocalTime startTime, LocalTime endTime, String name, String id, String password, int minPerTimeslot) {
+	public Schedule(Date startDate, Date endDate, LocalTime startTime, LocalTime endTime, String name, String password, int minPerTimeslot) {
 		weeks = new ArrayList<Week>();
 		this.startTime= startTime;
 		this.endTime= endTime;
 		this.startDate = startDate;
 		this.endDate = endDate;
 		this.name = name;
-		this.id= id;
 		this.password= password;
 		this.minPerTimeslot= minPerTimeslot;
 	}
@@ -70,8 +69,8 @@ public class Schedule {
 		name = s;
 	}
 	
-	public void setId(String s) {
-		id = s;
+	public void setId(int id) {
+		this.id = id;
 	}
 	
 	public void setPassword(String s) {
@@ -111,7 +110,7 @@ public class Schedule {
 		return name;
 	}
 	
-	public String getId() {
+	public int getId() {
 		return id;
 	}
 	
