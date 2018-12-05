@@ -95,26 +95,28 @@ public class GetWeekLambda implements RequestStreamHandler {
 		if (!processed) {
 			GetWeekRequest req = new Gson().fromJson(body, GetWeekRequest.class);
 			Week week = null;
+			GetWeekResponse resp;
 			try {
 				week = getWeek(req.schedId, new SimpleDateFormat("yyyy-MM-dd").parse(req.date));
+				if (week == null) {
+					resp = new GetWeekResponse(null, 400);
+				}
+				else {
+					resp = new GetWeekResponse(week, 200);
+				}
 			} catch (java.text.ParseException e) {
+				resp = new GetWeekResponse(null, 401);
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (NumberFormatException e) {
+				resp = new GetWeekResponse(null, 402);
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (Exception e) {
+				resp = new GetWeekResponse(null, 403);
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			GetWeekResponse resp;
-			if (week == null) {
-				resp = new GetWeekResponse(null, 400);
-			}
-			else {
-				resp = new GetWeekResponse(week, 200);
-			}
-
 			// compute proper response
 	        responseJson.put("body", new Gson().toJson(resp));  
 		}

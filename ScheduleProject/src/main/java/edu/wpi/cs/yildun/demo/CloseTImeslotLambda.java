@@ -27,6 +27,10 @@ public class CloseTImeslotLambda implements RequestStreamHandler {
 		ts.close();
 		dao.updateTimeslot(ts);
 	}
+	boolean validate(int id, String password) throws Exception {
+		ScheduleDAO dao = new ScheduleDAO();
+		return dao.getSchedule(id).getPassword().equals(password);
+	}
 
     @Override
 	public void handleRequest(InputStream input, OutputStream output, Context context) throws IOException {
@@ -75,14 +79,20 @@ public class CloseTImeslotLambda implements RequestStreamHandler {
 
 		if (!processed) {
 			CloseTimeslotRequest req = new Gson().fromJson(body, CloseTimeslotRequest.class);
-			CloseTimeslotResponse resp;
+			CloseTimeslotResponse resp = new CloseTimeslotResponse(400);
 			try {
-				closeTimeslot(req.id);
-				resp = new CloseTimeslotResponse(200);
+				if (validate(req.id, req.password)) {
+					closeTimeslot(req.id);
+					resp = new CloseTimeslotResponse(200);
+				}
+				else {
+					resp = new CloseTimeslotResponse(420);
+				}
+
 			} catch (Exception e) {
+				resp = new CloseTimeslotResponse(400);
 				// TODO Auto-generated catch block
 				e.printStackTrace();
-				resp = new CloseTimeslotResponse(400);
 			}
 
 			// compute proper response

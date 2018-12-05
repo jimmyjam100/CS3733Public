@@ -21,11 +21,15 @@ import edu.wpi.cs.yidun.model.Timeslot;
 
 public class CancelMeetingLambda implements RequestStreamHandler {
 
-	void cancelMeeting(int id, String password) throws Exception {
+	void cancelMeeting(int id) throws Exception {
 		ScheduleDAO dao = new ScheduleDAO();
 		Timeslot ts = dao.getTimeslot(id);
 		ts.cancelMeeting();
 		dao.updateTimeslot(ts);
+	}
+	boolean validate(int id, String password) throws Exception {
+		ScheduleDAO dao = new ScheduleDAO();
+		return dao.getTimeslot(id).getPassword().equals(password);
 	}
 	
     @Override
@@ -75,7 +79,19 @@ public class CancelMeetingLambda implements RequestStreamHandler {
 
 		if (!processed) {
 			CancelMeetingRequest req = new Gson().fromJson(body, CancelMeetingRequest.class);
-			CancelMeetingResponse resp;
+			CancelMeetingResponse resp = new CancelMeetingResponse(400);;
+			try {
+				if (validate(req.id, req.password)) {
+					cancelMeeting(req.id);
+					resp = new CancelMeetingResponse(200);
+				}
+				else {
+					resp = new CancelMeetingResponse(420);
+				}
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			resp = new CancelMeetingResponse(200);
 			// compute proper response
 	        responseJson.put("body", new Gson().toJson(resp));  

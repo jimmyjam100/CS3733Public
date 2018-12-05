@@ -17,12 +17,18 @@ import com.amazonaws.services.lambda.runtime.LambdaLogger;
 import com.amazonaws.services.lambda.runtime.RequestStreamHandler;
 import com.google.gson.Gson;
 
+import edu.wpi.cs.yidun.db.ScheduleDAO;
 import edu.wpi.cs.yidun.model.Week;
 
 public class DeleteScheduleLambda implements RequestStreamHandler {
 	
 	void deleteSchedule(int id) {
 		
+	}
+	
+	boolean validate(int id, String password) throws Exception {
+		ScheduleDAO dao = new ScheduleDAO();
+		return dao.getSchedule(id).getPassword().equals(password);
 	}
 
     @Override
@@ -72,9 +78,20 @@ public class DeleteScheduleLambda implements RequestStreamHandler {
 
 		if (!processed) {
 			DeleteScheduleRequest req = new Gson().fromJson(body, DeleteScheduleRequest.class);
-			DeleteScheduleResponse resp;
-			deleteSchedule(req.id);
-			resp = new DeleteScheduleResponse(200);
+			DeleteScheduleResponse resp = new DeleteScheduleResponse(400);
+			try {
+				if (validate(req.id, req.password)) {
+					deleteSchedule(req.id);
+					resp = new DeleteScheduleResponse(200);
+				}
+				else {
+					resp = new DeleteScheduleResponse(420);
+				}
+			} catch (Exception e) {
+				resp = new DeleteScheduleResponse(400);
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			// compute proper response
 	        responseJson.put("body", new Gson().toJson(resp));  
 		}
