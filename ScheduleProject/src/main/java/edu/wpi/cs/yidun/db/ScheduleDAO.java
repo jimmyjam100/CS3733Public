@@ -114,7 +114,7 @@ public class ScheduleDAO {
     			LocalTime time = LocalTime.parse(timeslotSet.getString("startTime"));
     			boolean open = timeslotSet.getString("isOpen").equals("Y");
     			Timeslot timeslot = new Timeslot(open, time);
-    			timeslot.makeMeeting(timeslotSet.getString("user"), timeslotSet.getString("password"));
+    			timeslot.makeMeeting(timeslotSet.getString("user"), timeslotSet.getString("pass"));
     			timeslot.setId(timeslotSet.getInt("id"));
     			
     			if (time.equals(startTime)) {
@@ -168,7 +168,7 @@ public class ScheduleDAO {
 			LocalTime time = LocalTime.parse(rs.getString("startTime"));
 			boolean open = rs.getString("isOpen").equals("Y");
 			Timeslot timeslot = new Timeslot(open, time);
-			timeslot.makeMeeting(rs.getString("user"), rs.getString("password"));
+			timeslot.makeMeeting(rs.getString("user"), rs.getString("pass"));
 			timeslot.setId(rs.getInt("id"));
 			rs.close();
 			ps.close();
@@ -181,8 +181,8 @@ public class ScheduleDAO {
     public void updateTimeslot(Timeslot t) throws Exception {
     	PreparedStatement ps = conn.prepareStatement("UPDATE Timeslots SET isOpen=?, user=?, pass=? WHERE id=?;");
     	ps.setString(1, t.isOpen()?"Y":"N");
-    	ps.setString(2, null/*TODO t.getUser()*/);
-    	ps.setString(3, null/*TODO t.getPass()*/);
+    	ps.setString(2, t.getUser());
+    	ps.setString(3, t.getPassword());
     	ps.setInt(4, t.getId());
     	
     	ps.executeUpdate();
