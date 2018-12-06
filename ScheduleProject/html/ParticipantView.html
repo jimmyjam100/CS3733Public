@@ -3,6 +3,9 @@
 <head>
 <script type="text/javascript">
 var getWeek_url = "https://7au48di44j.execute-api.us-east-2.amazonaws.com/Alpha/getweek"
+
+
+
 function processResponse(result) {
   var table = document.getElementById('weekDisplay');
   var js = JSON.parse(result);
@@ -15,10 +18,17 @@ function processResponse(result) {
   		blockHTMl += "<td>";
   		var blockData = week[day][timeslot];
   		blockHTML += "<p>Time: " + blockData["time"]["hour"] + ":" + blockData["time"]["minute"];
-  		if(week[day][timeslot][open] == true){
-  		 "\n</p><p><button>Sign Up</button></p><p><button>Close</button></p>";}
+  		if(week["days"][day]["timeslots"][timeslot]["open"] == true){
+		if(week["days"][day]["timeslots"][timeslot]["user"]=""){
+  		blockHTML+= "\n</p><p><button>CreateMeeting</button></p><p><button onClick=\"closeTimeslot(" + "days"][day]["timeslots"][timeslot]["id"] + ")>Close</button></p>";
+  		}
   		else{
-  		"\n</p><p><button>Sign Up</button></p><p><button>Open</button></p>";}
+  		blockHTML+= "\n</p><p>RESERVED</p><button>Cancel Meeting</button><p></p>";
+  		}
+  		}
+  		else{
+  		
+  		blockHTML += "\n</p><p>"CLOSED"</p><p><button>Open</button></p>";}
   		}
   		blockHTML += "</td>";
   		}
@@ -28,13 +38,13 @@ function processResponse(result) {
   		}
   		
   		
-function handleDisplayWeek(e) {
+function handleDisplayWeek() {
   var schedId = document.getElementById("schedId").value;
   var date = document.getElementById("date").value;
 
   
   var data = {};
-  data["schedId"] = schedId;
+  data["schedId"] = parseInt(schedId);
   data["date"] = date;
 
 
@@ -52,12 +62,67 @@ function handleDisplayWeek(e) {
     console.log(xhr.request);
     if (xhr.readyState == XMLHttpRequest.DONE) {
       console.log ("XHR:" + xhr.responseText);
-      processResponse(xhr.responseText);
+      processResponse();
     } else {
-      processResponse("N/A");
+      processResponse();
     }
   };
 }
+
+function closeTimeslot(id) {
+var closeTimeslotId = pasreInt(id);
+
+var data = {};
+data["id"] = closeTimeslotId;
+
+ var js = JSON.stringify(data);
+ console.log("JS:" + js);
+ var xhr = new XMLHttpRequest();
+ xhr.open("POST", closeTimeslot_url, true);
+ 
+ // send the collected data as JSON
+  xhr.send(js);
+
+// This will process results and update HTML as appropriate. 
+  xhr.onloadend = function () {
+    console.log(xhr);
+    console.log(xhr.request);
+    if (xhr.readyState == XMLHttpRequest.DONE) {
+      console.log ("XHR:" + xhr.responseText);
+      handleDisplayWeek();
+    } else {
+      handleDisplayWeek();
+    }
+  };
+}
+
+function openTimeslot(id) {
+var openTimeslotId = pasreInt(id);
+
+var data = {};
+data["id"] = openTimeslotId;
+
+ var js = JSON.stringify(data);
+ console.log("JS:" + js);
+ var xhr = new XMLHttpRequest();
+ xhr.open("POST", openTimeslot_url, true);
+ 
+ // send the collected data as JSON
+  xhr.send(js);
+
+// This will process results and update HTML as appropriate. 
+  xhr.onloadend = function () {
+    console.log(xhr);
+    console.log(xhr.request);
+    if (xhr.readyState == XMLHttpRequest.DONE) {
+      console.log ("XHR:" + xhr.responseText);
+      handleDisplayWeek();
+    } else {
+      handleDisplayWeek();
+    }
+  };
+}
+
 
 </script>
 
