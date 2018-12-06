@@ -1,10 +1,12 @@
 package edu.wpi.cs.yildun.demo;
 
 public class DeleteScheduleRequest {
-	String id;
+	int id;
+	String password;
 	
-	public DeleteScheduleRequest(String id) {
+	public DeleteScheduleRequest(int id, String password) {
 		this.id = id;
+		this.password = password;
 	}
 	
 	public String toString() {

@@ -17,11 +17,19 @@ import com.amazonaws.services.lambda.runtime.RequestStreamHandler;
 import com.google.gson.Gson;
 
 import edu.wpi.cs.yidun.db.ScheduleDAO;
+import edu.wpi.cs.yidun.model.Timeslot;
 
 public class CloseTImeslotLambda implements RequestStreamHandler {
 	
-	void closeTimeslot(int id){
+	void closeTimeslot(int id) throws Exception{
 		ScheduleDAO dao = new ScheduleDAO();
+		Timeslot ts = dao.getTimeslot(id);
+		ts.close();
+		dao.updateTimeslot(ts);
+	}
+	boolean validate(int id, String password) throws Exception {
+		ScheduleDAO dao = new ScheduleDAO();
+		return dao.getSchedule(id).getPassword().equals(password);
 	}
 
     @Override
@@ -71,9 +79,22 @@ public class CloseTImeslotLambda implements RequestStreamHandler {
 
 		if (!processed) {
 			CloseTimeslotRequest req = new Gson().fromJson(body, CloseTimeslotRequest.class);
-			CloseTimeslotResponse resp;
-			closeTimeslot(req.id);
-			resp = new CloseTimeslotResponse(200);
+			CloseTimeslotResponse resp = new CloseTimeslotResponse(400);
+			try {
+				if (validate(req.id, req.password)) {
+					closeTimeslot(req.id);
+					resp = new CloseTimeslotResponse(200);
+				}
+				else {
+					resp = new CloseTimeslotResponse(420);
+				}
+
+			} catch (Exception e) {
+				resp = new CloseTimeslotResponse(400);
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
 			// compute proper response
 	        responseJson.put("body", new Gson().toJson(resp));  
 		}
