@@ -15,27 +15,19 @@ import edu.wpi.cs.yidun.model.Week;
 import edu.wpi.cs.yildun.demo.LambdaFunctionHandler;
 
 public class TestDAO {
-
-	//TODO !Add more test cases!
-	
-	Schedule schedule;
-	ScheduleDAO dao;
 	
 	@SuppressWarnings("deprecation")
-	@Before
-	public void initAll() {
-		Date startDate = new Date();
-		Date endDate = new Date();
-		endDate.setDate(startDate.getDate()+1);
-		schedule = LambdaFunctionHandler.newSchedule("Test", startDate, endDate,
-				LocalTime.parse("09:00"), LocalTime.parse("16:00"), 60);
-		
-		dao = new ScheduleDAO();
-	}
-	
 	@Test
-	public void testAddAndGetSchedule() {
+	public void testScheduleFcns() {
 		try {
+			Date startDate = new Date();
+			Date endDate = new Date();
+			endDate.setDate(startDate.getDate()+1);
+			Schedule schedule = LambdaFunctionHandler.newSchedule("Test", startDate, endDate,
+					LocalTime.parse("09:00"), LocalTime.parse("16:00"), 60);
+			
+			ScheduleDAO dao = new ScheduleDAO();
+			
 			dao.addSchedule(schedule);
 			int ts1 = 0, ts2 = 0;
 			for (Week week : schedule.getWeeks()) {
@@ -55,6 +47,14 @@ public class TestDAO {
 				}
 			}
 			Assert.assertEquals(ts1, ts2);
+			
+			//Assert.assertEquals(dao.getAllSchedules().size(), 1);
+			//Assert.assertEquals(dao.getSchedulesEarlier(1).size(), 1);
+			Timeslot test = schedule.getWeeks().get(0).getDays().get(0).getTimeslots().get(0);
+			test.makeMeeting("a", "b");
+			dao.updateTimeslot(test);
+			Assert.assertEquals(dao.getTimeslot(test.getId()).getPassword(), test.getPassword());
+			Assert.assertTrue(dao.deleteSchedule(schedule.getId()));
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

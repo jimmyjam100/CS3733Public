@@ -1,11 +1,14 @@
 package edu.wpi.cs.yidun.db;
 
 import java.sql.*;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Calendar;
 
 import edu.wpi.cs.yidun.model.Day;
+import edu.wpi.cs.yidun.model.Pair;
 import edu.wpi.cs.yidun.model.Schedule;
 import edu.wpi.cs.yidun.model.Timeslot;
 import edu.wpi.cs.yidun.model.Week;
@@ -29,18 +32,16 @@ public class ScheduleDAO {
      */
 	public void addSchedule(Schedule s) throws Exception {
     	PreparedStatement scheduleInsert = conn.prepareStatement(
-    			"INSERT INTO Schedules (scheduleName, pass, startTime, endTime, createdDate, createdTime, startDate, endDate, minPerTimeSlot)"
-    			+ "values (?, ?, ?, ?, ?, ?, ?, ?, ?);", Statement.RETURN_GENERATED_KEYS);
+    			"INSERT INTO Schedules (scheduleName, pass, startTime, endTime, created, startDate, endDate, minPerTimeSlot)"
+    			+ "values (?, ?, ?, ?, NOW(),  ?, ?, ?);", Statement.RETURN_GENERATED_KEYS);
     	
     	scheduleInsert.setString(1, s.getName());
     	scheduleInsert.setString(2, s.getPassword());
     	scheduleInsert.setString(3, s.getStartTime().toString());
     	scheduleInsert.setString(4, s.getEndTime().toString());
-    	scheduleInsert.setDate(5, Date.valueOf(LocalDate.now()));
-    	scheduleInsert.setTime(6, Time.valueOf(LocalTime.now()));
-    	scheduleInsert.setDate(7, new Date(s.getStartDate().getTime()));
-    	scheduleInsert.setDate(8, new Date(s.getEndDate().getTime()));
-    	scheduleInsert.setInt(9, s.getMinPerTimeslot());
+    	scheduleInsert.setDate(5, new Date(s.getStartDate().getTime()));
+    	scheduleInsert.setDate(6, new Date(s.getEndDate().getTime()));
+    	scheduleInsert.setInt(7, s.getMinPerTimeslot());
     	
     	scheduleInsert.executeUpdate(); //Save all the Schedule columns to the Schedule Table
     	int id = -1;
@@ -231,54 +232,54 @@ public class ScheduleDAO {
     	ps.close();
     }
     /**
-     * Get the names of all schedules
-     * @return An ArrayList<String> containing all ScheduleNames
+     * Get the names and ids of all schedules
+     * @return An ArrayList<Pair<String, Integer>> containing all names, ids
      * @throws Exception
      */
-    public ArrayList<String> getAllSchedules() throws Exception{
+    public ArrayList<Pair<String, Integer>> getAllSchedules() throws Exception{
     	return getSchedulesOlder(0); //Call older with param 0 (True for all schedules)
     }
     /**
      * Gets all the schedules created more recently than some N hours
      * @param hour the maximum number of hours the schedule has existed
-     * @return An ArrayList<String> containing matching Schedules' names
+     * @return An ArrayList<Pair<String, Integer>> containing matching Schedules' names/ids
      * @throws Exception
      */
-    public ArrayList<String> getSchedulesEarlier(int hour) throws Exception {
+    public ArrayList<Pair<String, Integer>> getSchedulesEarlier(int hour) throws Exception {
     	PreparedStatement ps = conn.prepareStatement(
-    			"SELECT name FROM Schedules WHERE"
-    			+ "createdDate > DATEADD(HOUR, ?, CURDATE());");
-    	//Subtract the hour from the CURDATE()
-    	ps.setInt(1, -hour);
+    			"SELECT scheduleName, id FROM Schedules WHERE"
+    			+ " created > (NOW() - INTERVAL ? HOUR);");
+    	
+    	ps.setInt(1, hour);
     	ResultSet rs = ps.executeQuery();
-    	ArrayList<String> names = new ArrayList<String>();
+    	ArrayList<Pair<String, Integer>> info = new ArrayList<Pair<String, Integer>>();
     	while (rs.next()) {
-    		names.add(rs.getString(1));
+    		info.add(new Pair<String, Integer>(rs.getString("scheduleName"), rs.getInt("id")));
     	}
     	rs.close();
     	ps.close();
-    	return names;
+    	return info;
     }
     /**
      * Gets all the schedules created more recently than some N hours
      * @param hour the maximum number of hours the schedule has existed
-     * @return An ArrayList<String> containing matching Schedules' names
+     * @return An ArrayList<Pair<String, Integer>> containing matching Schedules' names/ids
      * @throws Exception
      */
-    public ArrayList<String> getSchedulesOlder(int days) throws Exception {
+    public ArrayList<Pair<String, Integer>> getSchedulesOlder(int days) throws Exception {
     	PreparedStatement ps = conn.prepareStatement(
-    			"SELECT name FROM Schedules WHERE"
-    			+ "createdDate < DATEADD(DAY, ?, CURDATE());");
+    			"SELECT scheduleName, id FROM Schedules WHERE"
+    			+ " created < TIMESTAMPADD(DAY, ?, NOW());");
     	//Subtract days
     	ps.setInt(1, -days);
     	ResultSet rs = ps.executeQuery();
-    	ArrayList<String> names = new ArrayList<String>();
+    	ArrayList<Pair<String, Integer>> info = new ArrayList<Pair<String, Integer>>();
     	while (rs.next()) {
-    		names.add(rs.getString(1));
+    		info.add(new Pair<String, Integer>(rs.getString("scheduleName"), rs.getInt("id")));
     	}
     	rs.close();
     	ps.close();
-    	return names;
+    	return info;
     }
     
     /**
@@ -286,16 +287,18 @@ public class ScheduleDAO {
      * @param id the ID of the schedule to delete
      * @throws Exception
      */
-    public void deleteSchedule(int id) throws Exception {
+    public boolean deleteSchedule(int id) throws Exception {
     	PreparedStatement ps1 = conn.prepareStatement("DELETE FROM Schedules WHERE id=?;");
     	ps1.setInt(1, id);
-    	ps1.executeUpdate();
+    	int deleted = ps1.executeUpdate();
     	ps1.close();
     	
     	PreparedStatement ps2 = conn.prepareStatement("DELETE FROM Timeslots WHERE scheduleID=?;");
     	ps2.setInt(1, id);
     	ps2.executeUpdate();
     	ps2.close();
+    	
+    	return deleted>0;
     }
     
     /**
