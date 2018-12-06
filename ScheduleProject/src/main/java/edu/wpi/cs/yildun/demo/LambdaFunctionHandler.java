@@ -79,7 +79,7 @@ public class LambdaFunctionHandler implements RequestStreamHandler {
 	    return weeks;
 	}
 	
-	Schedule newSchedule(String n, Date sD, Date eD, LocalTime sT, LocalTime eT, int timeslotL) {
+	public static Schedule newSchedule(String n, Date sD, Date eD, LocalTime sT, LocalTime eT, int timeslotL) {
 		Schedule temp = new Schedule(sD, eD, sT, eT, n, "password", timeslotL);
 		Calendar cal = Calendar.getInstance();
 		cal.setTime(sD);
@@ -91,7 +91,7 @@ public class LambdaFunctionHandler implements RequestStreamHandler {
 		        int startMin = sT.get(ChronoField.MINUTE_OF_DAY);
 		        int endMin = eT.get(ChronoField.MINUTE_OF_DAY);
 		        for (int k = 0; k < endMin - startMin; k+=timeslotL) {
-		       		tempDay.getTimeslots().add(new Timeslot(true, (sT.plusMinutes(j))));
+		       		tempDay.getTimeslots().add(new Timeslot(true, (sT.plusMinutes(k))));
 		       	}
 				tempWeek.addDay(tempDay);
 				cal.add(Calendar.DATE, 1);
