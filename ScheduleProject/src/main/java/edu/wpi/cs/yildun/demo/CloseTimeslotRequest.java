@@ -2,6 +2,7 @@ package edu.wpi.cs.yildun.demo;
 
 public class CloseTimeslotRequest {
 	int id;
+	int schedId;
 	String password;
 	
 	public CloseTimeslotRequest(int id, String password) {
