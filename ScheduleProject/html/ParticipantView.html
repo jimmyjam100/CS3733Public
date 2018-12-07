@@ -2,7 +2,11 @@
 
 <head>
 <script type="text/javascript">
-var getWeek_url = "https://7au48di44j.execute-api.us-east-2.amazonaws.com/Alpha/getweek"
+var getWeek_url = "https://7au48di44j.execute-api.us-east-2.amazonaws.com/Alpha/getweek";
+var createMeeting_url = "https://7au48di44j.execute-api.us-east-2.amazonaws.com/Alpha/createmeeting";
+var cancelMeeting_url = "https://7au48di44j.execute-api.us-east-2.amazonaws.com/Alpha/cancelmeeting";
+var searchOpen_url = "";
+var getAllSchedules_url ="https://7au48di44j.execute-api.us-east-2.amazonaws.com/Alpha/getallschedules";
 
 
 
@@ -20,7 +24,7 @@ function processResponse(result) {
   		blockHTML += "<p>Time: " + blockData["time"]["hour"] + ":" + blockData["time"]["minute"];
   		if(week["days"][day]["timeslots"][timeslot]["open"] == true){
 		if(week["days"][day]["timeslots"][timeslot]["user"]=""){
-  		blockHTML+= "\n</p><p><button>CreateMeeting</button></p><p><button onClick=\"closeTimeslot(" + "days"][day]["timeslots"][timeslot]["id"] + ")>Close</button></p>";
+  		blockHTML+= "\n</p><p><button>CreateMeeting</button></p><p><button onClick=\"closeTimeslot(" + ["days"][day]["timeslots"][timeslot]["id"] + ")>Close</button></p>";
   		}
   		else{
   		blockHTML+= "\n</p><p>RESERVED</p><button>Cancel Meeting</button><p></p>";
@@ -36,8 +40,12 @@ function processResponse(result) {
   		}
   		table.innerHTML = blockHTML;
   		}
+
   		
   		
+
+
+
 function handleDisplayWeek() {
   var schedId = document.getElementById("schedId").value;
   var date = document.getElementById("date").value;
@@ -69,16 +77,18 @@ function handleDisplayWeek() {
   };
 }
 
-function closeTimeslot(id) {
-var closeTimeslotId = pasreInt(id);
+function createMeeting(id, user) {
+var createMeetingId = parseInt(id);
+var user = user;
 
 var data = {};
-data["id"] = closeTimeslotId;
+data["closeTimeslotId"] = createMeetingId;
+date["user"] = user;
 
  var js = JSON.stringify(data);
  console.log("JS:" + js);
  var xhr = new XMLHttpRequest();
- xhr.open("POST", closeTimeslot_url, true);
+ xhr.open("POST", createMeeting_url, true);
  
  // send the collected data as JSON
   xhr.send(js);
@@ -96,16 +106,18 @@ data["id"] = closeTimeslotId;
   };
 }
 
-function openTimeslot(id) {
-var openTimeslotId = pasreInt(id);
+function cancelMeeting(id, password) {
+var cancelMeetingId = pasreInt(id);
+var password = password;
 
 var data = {};
-data["id"] = openTimeslotId;
+data["cancelMeetingId"] = parseInt(cancelMeetingId);
+data["password"] = password;
 
  var js = JSON.stringify(data);
  console.log("JS:" + js);
  var xhr = new XMLHttpRequest();
- xhr.open("POST", openTimeslot_url, true);
+ xhr.open("POST", cancelMeeting_url, true);
  
  // send the collected data as JSON
   xhr.send(js);
@@ -122,6 +134,10 @@ data["id"] = openTimeslotId;
     }
   };
 }
+
+
+
+
 
 
 </script>
@@ -159,7 +175,15 @@ data["id"] = openTimeslotId;
 	</style>
 <body>
 
+<p>
+Schedule List:
 
+<table id="schedList"></table>
+</p>
+<hr width=100%></hr>
+
+<p id="scheduleName">
+</p>
 
 
 
