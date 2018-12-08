@@ -19,42 +19,27 @@ function processResponse(result) {
   var table = document.getElementById('weekDisplay');
   var js = JSON.parse(result);
   
-  var timeslotList = js["timeslotList"];
-  var blockHTML = "<tr> <td> Monday </td> <td> Tuesday </td> <td> Wensday </td> <td> Thursday </td> <td> Friday </td> </tr> ";
-  for (var timeslot = 0; timeslot < timeslotList[0].length; timeslot++) {
-  	blockHTML += "<tr>";
-    for (var day = 0; day < 5; day++) {
-      blockHTML += "<td>";
-      if (day >= js["startingIndex"]){
-        var blockData = timeslotList[day - js["startingIndex"]][timeslot];
-       if(week["days"][day]["timeslots"][timeslot]["open"] == true){
-		if(week["days"][day]["timeslots"][timeslot]["user"]=""){
-  		  blockHTML+= "\n</p><p><button>CreateMeeting</button></p><p><button onClick=\"closeTimeslot(" + ["days"][day]["timeslots"][timeslot]["id"] + ")>Close</button></p>";
-  		}
-  		else{
-  		  blockHTML+= "\n</p><p>RESERVED</p><button>Cancel Meeting</button><p></p>";
-  	    }
-  	   }
-  	   else{
-  		
-  		blockHTML += "\n</p><p>CLOSED</p><p><button>Open</button></p>";
-  		}
-  	   }
-  	   blockHTML += "</td>";
-  	  }
-  	blockHTML += "</tr>";
-   }
-  table.innerHTML = blockHTML;
+ 
+ 
+ 
+ 
+  confirm("Use this password to edit schedule. DO NOT LOSE! " + js["password"]);
+  
+
+
+
+
+  
   		
 
   // Can grab any DIV or SPAN HTML element and can then manipulate its
   // contents dynamically via javascript
 
-  var computation = js["name"];
+  //var computation = js["name"];
 
   // Update computation result
-  var weekDisplay = document.getElementById('schedList');
-  weekDisplay.innerHTML = "<tr> <td>" + computation + "</td> </tr>";
+  //var weekDisplay = document.getElementById('schedList');
+  //weekDisplay.innerHTML = "<tr> <td>" + computation + "</td> </tr>";
 }
 
 
@@ -98,11 +83,9 @@ function handleCreate() {
 
 
 
-function promptWeek(id){
-var id = parseInt(prompt("Enter id"));
-var date = Date.parse(prompt("Enter a date in the format of dd/mm/yyyy"));
-handleDisplayWeek(id, date);
-}
+
+
+
 
 function processGetSchedules(result){
 var scheduleListHTMLCode = document.getElementById('scheduleName');
@@ -111,7 +94,8 @@ var js = JSON.parse(result);
 var schedListItems = js["schedList"];
 var listHTML = "<dl>";
 	for(var i = 0; i<schedListItems.length; i++){
-	listHTML += "<dt>" + schedListItems[i]["name"] + "<button onClick=" + "JavaScript:promptWeek()" + ">View Schedule</button>" +"</dt>";
+	listHTML += "<dt>" +  schedListItems[i]["name"]  + "<button onClick=\"JavaScript:handleDisplayWeek(" + schedListItems[i]["id"] + ")\">View Schedule</button>" + "<button>Delete</button>"+ "</dt>";
+
 	}
 	listHTML += "</ul>";
 	scheduleListHTMLCode.innerHTML = listHTML;
@@ -147,21 +131,20 @@ function handleGetSchedules(){
 
 
 
-function handleDisplayWeek( schedId, date) {
-  //var schedId = document.getElementById("schedId").value;
-  //var date = document.getElementById("date").value;
-	var schedId = schedId;
-	var date = date;
+function handleDisplayWeek(id) {
+
+	var date = document.getElementById("weekDate").value;
+	var schedId = id;
   
   var data = {};
-  data["schedId"] = parseInt(schedId);
+  data["schedId"] = schedId;
   data["date"] = date;
 
 
   var js = JSON.stringify(data);
   console.log("JS:" + js);
   var xhr = new XMLHttpRequest();
-  xhr.open("GET", getWeek_url, true);
+  xhr.open("POST", getWeek_url, true);
 
   // send the collected data as JSON
   xhr.send(js);
@@ -185,7 +168,7 @@ function processGetWeek(result){
   
   var week = js["week"];
   var blockHTML = "<tr> <td> Monday </td> <td> Tuesday </td> <td> Wensday </td> <td> Thursday </td> <td> Friday </td> </tr> ";
-  if(week["days"]>0){
+  if(week["days"].length>0){
   for(var i = 0; i < week["days"][0]["timeslots"].length; i++){
     blockHTML += "<tr>";
     for(var j = 0; j < 5; j++){
@@ -374,7 +357,8 @@ Schedule List:
 <button>add time to end</button>
 </p>
 <p>
-<input type"date" id="date" placeholder="Enter Week"></input>
+<input type="date" id="weekDate" placeHolder="Enter day from schedule"></input>
+<input type = "hidden" id="displayWeekScheduleId" ></input>
 <button>Display</button>
 </p>
 <p>
