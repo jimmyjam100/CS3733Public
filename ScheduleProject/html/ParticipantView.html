@@ -24,7 +24,7 @@ function processResponse(result) {
   		blockHTML += "<p>Time: " + blockData["time"]["hour"] + ":" + blockData["time"]["minute"];
   		if(week["days"][day]["timeslots"][timeslot]["open"] == true){
 		if(week["days"][day]["timeslots"][timeslot]["user"]=""){
-  		blockHTML+= "\n</p><p><button>CreateMeeting</button></p><p><button onClick=\"closeTimeslot(" + ["days"][day]["timeslots"][timeslot]["id"] + ")>Close</button></p>";
+  		blockHTML+= "\n</p><p><button onClick=\"createMeeting(" + ["days"][day]["timeslots"][timeslot]["id"] + ", "Shabalaba")>CreateMeeting</button></p><p><button onClick=\"closeTimeslot(" + ["days"][day]["timeslots"][timeslot]["id"] + ")>Close</button></p>";
   		}
   		else{
   		blockHTML+= "\n</p><p>RESERVED</p><button>Cancel Meeting</button><p></p>";

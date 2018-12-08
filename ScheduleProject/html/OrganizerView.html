@@ -5,7 +5,7 @@ var create_url = "https://7au48di44j.execute-api.us-east-2.amazonaws.com/Alpha/c
 var delete_url = "https://7au48di44j.execute-api.us-east-2.amazonaws.com/Alpha/deleteschedule";
 var cancelMeeting_url = "https://7au48di44j.execute-api.us-east-2.amazonaws.com/Alpha/cancelmeeting";
 var openTimeslot_url = "";
-var closeTimeslot_url = "https://7au48di44j.execute-api.us-east-2.amazonaws.com/Alph"a/closetimeslot";
+var closeTimeslot_url = "https://7au48di44j.execute-api.us-east-2.amazonaws.com/Alpha/closetimeslot";
 var getAllSchedules_url ="https://7au48di44j.execute-api.us-east-2.amazonaws.com/Alpha/getallschedules";
 var getWeek_url =  "https://7au48di44j.execute-api.us-east-2.amazonaws.com/Alpha/getweek";
 
@@ -27,15 +27,26 @@ function processResponse(result) {
       blockHTML += "<td>";
       if (day >= js["startingIndex"]){
         var blockData = timeslotList[day - js["startingIndex"]][timeslot];
-        blockHTML += "<p>Time: " + blockData["time"]["hour"] + ":" + blockData["time"]["minute"] + "\n</p><p><button>Sign Up</button></p><p><button>Close</button></p>";
-        //blockHTML += "hi";
-
-      }
-      blockHTML += "</td>";
-    }
-    blockHTML += "</tr>";
-  }
+       if(week["days"][day]["timeslots"][timeslot]["open"] == true){
+		if(week["days"][day]["timeslots"][timeslot]["user"]=""){
+  		  blockHTML+= "\n</p><p><button>CreateMeeting</button></p><p><button onClick=\"closeTimeslot(" + ["days"][day]["timeslots"][timeslot]["id"] + ")>Close</button></p>";
+  		}
+  		else{
+  		  blockHTML+= "\n</p><p>RESERVED</p><button>Cancel Meeting</button><p></p>";
+  	    }
+  	   }
+  	   else{
+  		
+  		blockHTML += "\n</p><p>CLOSED</p><p><button>Open</button></p>";
+  		}
+  	   }
+  	   blockHTML += "</td>";
+  	  }
+  	blockHTML += "</tr>";
+   }
   table.innerHTML = blockHTML;
+  		
+
   // Can grab any DIV or SPAN HTML element and can then manipulate its
   // contents dynamically via javascript
 
@@ -87,10 +98,60 @@ function handleCreate() {
 
 
 
-function handleDisplayWeek() {
-  var schedId = document.getElementById("schedId").value;
-  var date = document.getElementById("date").value;
+function promptWeek(id){
+var id = parseInt(prompt("Enter id"));
+var date = Date.parse(prompt("Enter a date in the format of dd/mm/yyyy"));
+handleDisplayWeek(id, date);
+}
 
+function processGetSchedules(result){
+var scheduleListHTMLCode = document.getElementById('scheduleName');
+var js = JSON.parse(result);
+
+var schedListItems = js["schedList"];
+var listHTML = "<dl>";
+	for(var i = 0; i<schedListItems.length; i++){
+	listHTML += "<dt>" + schedListItems[i]["name"] + "<button onClick=" + "JavaScript:promptWeek()" + ">View Schedule</button>" +"</dt>";
+	}
+	listHTML += "</ul>";
+	scheduleListHTMLCode.innerHTML = listHTML;
+}
+
+
+
+
+function handleGetSchedules(){
+  var data = {};
+  var js = JSON.stringify(data);
+  console.log("JS:" + js);
+  var xhr = new XMLHttpRequest();
+  xhr.open("GET", getAllSchedules_url, true);
+
+  // send the collected data as JSON
+  xhr.send(js);
+
+  // This will process results and update HTML as appropriate. 
+  xhr.onloadend = function () {
+    console.log(xhr);
+    console.log(xhr.request);
+    if (xhr.readyState == XMLHttpRequest.DONE) {
+      console.log ("XHR:" + xhr.responseText);
+      processGetSchedules(xhr.responseText);
+    } else {
+      processGetSchedules("N/A");
+    }
+  };
+}
+
+
+
+
+
+function handleDisplayWeek( schedId, date) {
+  //var schedId = document.getElementById("schedId").value;
+  //var date = document.getElementById("date").value;
+	var schedId = schedId;
+	var date = date;
   
   var data = {};
   data["schedId"] = parseInt(schedId);
@@ -111,19 +172,59 @@ function handleDisplayWeek() {
     console.log(xhr.request);
     if (xhr.readyState == XMLHttpRequest.DONE) {
       console.log ("XHR:" + xhr.responseText);
-      processResponse();
+      processGetWeek(xhr.responseText);
     } else {
-      processResponse();
+      processGetWeek("N/A");
     }
   };
 }
 
+function processGetWeek(result){
+  var table = document.getElementById('weekDisplay');
+  var js = JSON.parse(result);
+  
+  var week = js["week"];
+  var blockHTML = "<tr> <td> Monday </td> <td> Tuesday </td> <td> Wensday </td> <td> Thursday </td> <td> Friday </td> </tr> ";
+  if(week["days"]>0){
+  for(var i = 0; i < week["days"][0]["timeslots"].length; i++){
+    blockHTML += "<tr>";
+    for(var j = 0; j < 5; j++){
+      blockHTML += "<td>";
+      for(var k = 0; k < week["days"].length; k++){
+        if(week["days"][k]["weekday"] == j){
+          if(week["days"][k]["timeslots"][i]["open"] == true){
+		    if(week["days"][k]["timeslots"][i]["user"]=""){
+  		      blockHTML+= "\n</p><p><button>CreateMeeting</button></p><p><button onClick=\"closeTimeslot(" + ["days"][k]["timeslots"][i]["id"] + ")>Close</button></p>";
+  		    }
+  		    else{
+  		      blockHTML+= "\n</p><p>RESERVED</p><button>Cancel Meeting</button><p></p>";
+  	        }
+  	      }
+  	      else{
+  		
+  		  blockHTML += "\n</p><p>CLOSED</p><p><button>Open</button></p>";}
+  	      }
+  	    }
+  	    blockHTML += "</td>";
+  	  }
+  	  blockHTML += "</tr>";
+    }
+  }
+    table.innerHTML = blockHTML;
+      
+      
+}
 
-function closeTimeslot(id) {
+
+/*function closeTimeslot(id, password, schedId) {
 var closeTimeslotId = pasreInt(id);
+var password = password;
+var schedId = schedId;
 
 var data = {};
 data["id"] = closeTimeslotId;
+data["password"] = password;
+data["schedId"] = schedId;
 
  var js = JSON.stringify(data);
  console.log("JS:" + js);
@@ -229,7 +330,7 @@ data["password"] = password;
       handleDisplayWeek();
     }
   };
-}
+} */
 
 </script>
 </head>
@@ -257,9 +358,10 @@ data["password"] = password;
 <input type="button" value="Create Schedule"  onClick="JavaScript:handleCreate(this)">
 </p>
 <p>
-Schedule List:
+<button onClick="JavaScript:handleGetSchedules()">Display Schedules</button>
+Schedule List: 
 
-<table id="schedList"></table>
+
 </p>
 <hr width=100%></hr>
 
@@ -272,7 +374,7 @@ Schedule List:
 <button>add time to end</button>
 </p>
 <p>
-<input placeholder="Enter Week"></input>
+<input type"date" id="date" placeholder="Enter Week"></input>
 <button>Display</button>
 </p>
 <p>
