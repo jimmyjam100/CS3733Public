@@ -81,7 +81,7 @@ public class CloseTImeslotLambda implements RequestStreamHandler {
 			CloseTimeslotRequest req = new Gson().fromJson(body, CloseTimeslotRequest.class);
 			CloseTimeslotResponse resp = new CloseTimeslotResponse(400);
 			try {
-				if (validate(req.id, req.password)) {
+				if (validate(req.schedId, req.password)) {
 					closeTimeslot(req.id);
 					resp = new CloseTimeslotResponse(200);
 				}

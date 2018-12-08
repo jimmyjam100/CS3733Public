@@ -22,8 +22,9 @@ import edu.wpi.cs.yidun.model.Week;
 
 public class DeleteScheduleLambda implements RequestStreamHandler {
 	
-	void deleteSchedule(int id) {
-		
+	void deleteSchedule(int id) throws Exception {
+		ScheduleDAO dao = new ScheduleDAO();
+		dao.deleteSchedule(id);
 	}
 	
 	boolean validate(int id, String password) throws Exception {

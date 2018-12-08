@@ -7,6 +7,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.text.SimpleDateFormat;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -20,13 +21,25 @@ import com.amazonaws.services.lambda.runtime.LambdaLogger;
 import com.amazonaws.services.lambda.runtime.RequestStreamHandler;
 import com.google.gson.Gson;
 
+import edu.wpi.cs.yidun.db.ScheduleDAO;
 import edu.wpi.cs.yidun.model.Day;
+import edu.wpi.cs.yidun.model.Pair;
 import edu.wpi.cs.yidun.model.Schedule;
 import edu.wpi.cs.yidun.model.Week;
 
 public class GetSchedulesLambda implements RequestStreamHandler {
-	ArrayList<Schedule> getSchedules() { //TODO: turn this function into an SQL request
-		return (new ArrayList<Schedule>());
+	
+	
+	ArrayList<Schedule> getSchedules() throws Exception { //TODO: turn this function into an SQL request
+		ScheduleDAO dao = new ScheduleDAO();
+		ArrayList<Pair<String, Integer>> temp = dao.getAllSchedules();
+		ArrayList<Schedule> ret = new ArrayList<Schedule>();
+		for (Pair<String, Integer> t : temp) {
+			Schedule temp2 = new Schedule(null, null, null, null, t.getVal1(), null, 0);
+			temp2.setId(t.getVal2());
+			ret.add(temp2);
+		}
+		return ret;
 	}
 
     @Override
@@ -77,7 +90,13 @@ public class GetSchedulesLambda implements RequestStreamHandler {
 		if (!processed) {
 			GetSchedulesRequest req = new Gson().fromJson(body, GetSchedulesRequest.class);
 			GetSchedulesResponse resp;
-			resp = new GetSchedulesResponse(getSchedules(), 200);
+			try {
+				resp = new GetSchedulesResponse(getSchedules(), 200);
+			} catch (Exception e) {
+				resp = new GetSchedulesResponse(null, 400);
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			// compute proper response
 	        responseJson.put("body", new Gson().toJson(resp));  
 		}
