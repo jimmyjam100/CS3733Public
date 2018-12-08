@@ -24,7 +24,7 @@ public class CreateMeetingLambda implements RequestStreamHandler {
 	
 	String randPassword() {
 	    int leftLimit = 97; // letter 'a'
-	    int rightLimit = 148; // letter 'Z'
+	    int rightLimit = 121; // letter 'Z'
 	    int targetStringLength = 10;
 	    Random random = new Random();
 	    StringBuilder buffer = new StringBuilder(targetStringLength);
