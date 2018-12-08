@@ -10,56 +10,13 @@ var getAllSchedules_url ="https://7au48di44j.execute-api.us-east-2.amazonaws.com
 
 
 
-function processResponse(result) {
-  var table = document.getElementById('weekDisplay');
-  var js = JSON.parse(result);
-  
-  var week = js["week"];
-  var blockHTML = "<tr> <td> Monday </td> <td> Tuesday </td> <td> Wensday </td> <td> Thursday </td> <td> Friday </td> </tr> ";
-  	for(var timeslot = 0; timeslot < week["days"][0]["timeslots"].length; timeslot++){
-  		blockHTML+= "<tr>";
-  		for(var day = 0; day < 5; day++){
-  		blockHTMl += "<td>";
-  		var blockData = week[day][timeslot];
-  		blockHTML += "<p>Time: " + blockData["time"]["hour"] + ":" + blockData["time"]["minute"];
-  		if(week["days"][day]["timeslots"][timeslot]["open"] == true){
-		if(week["days"][day]["timeslots"][timeslot]["user"]=""){
-  		blockHTML+= "\n</p><p><button onClick=\"createMeeting(" + ["days"][day]["timeslots"][timeslot]["id"] + ", "Shabalaba")>CreateMeeting</button></p><p><button onClick=\"closeTimeslot(" + ["days"][day]["timeslots"][timeslot]["id"] + ")>Close</button></p>";
-  		}
-  		else{
-  		blockHTML+= "\n</p><p>RESERVED</p><button>Cancel Meeting</button><p></p>";
-  		}
-  		}
-  		else{
-  		
-  		blockHTML += "\n</p><p>"CLOSED"</p><p><button>Open</button></p>";}
-  		}
-  		blockHTML += "</td>";
-  		}
-  		blockHTML += "</tr>";
-  		}
-  		table.innerHTML = blockHTML;
-  		}
 
-  		
-  		
-
-
-
-function handleDisplayWeek() {
-  var schedId = document.getElementById("schedId").value;
-  var date = document.getElementById("date").value;
-
-  
+function handleGetSchedules(){
   var data = {};
-  data["schedId"] = parseInt(schedId);
-  data["date"] = date;
-
-
   var js = JSON.stringify(data);
   console.log("JS:" + js);
   var xhr = new XMLHttpRequest();
-  xhr.open("GET", getWeek_url, true);
+  xhr.open("GET", getAllSchedules_url, true);
 
   // send the collected data as JSON
   xhr.send(js);
@@ -70,31 +27,117 @@ function handleDisplayWeek() {
     console.log(xhr.request);
     if (xhr.readyState == XMLHttpRequest.DONE) {
       console.log ("XHR:" + xhr.responseText);
-      processResponse();
-    } else {
-      processResponse();
+      processGetSchedules(xhr.responseText);
+      processGetSchedules("N/A");
     }
   };
 }
 
-function createMeeting(id, user) {
-var createMeetingId = parseInt(id);
-var user = user;
 
-var data = {};
-data["closeTimeslotId"] = createMeetingId;
-date["user"] = user;
 
- var js = JSON.stringify(data);
- console.log("JS:" + js);
- var xhr = new XMLHttpRequest();
- xhr.open("POST", createMeeting_url, true);
- 
- // send the collected data as JSON
+function processGetSchedules(result){
+var scheduleListHTMLCode = document.getElementById('scheduleName');
+var js = JSON.parse(result);
+
+var schedListItems = js["schedList"];
+var listHTML = "<dl>";
+	for(var i = 0; i<schedListItems.length; i++){
+	listHTML += "<dt>" +  schedListItems[i]["name"]  + "<button onClick=\"JavaScript:handleDisplayWeek(" + schedListItems[i]["id"] + ")\">View Schedule</button>" + "</dt>";
+
+	}
+	listHTML += "</ul>";
+	scheduleListHTMLCode.innerHTML = listHTML;
+}
+
+
+
+
+function handleDisplayWeek(id) {
+
+	var date = document.getElementById("weekDate").value;
+	var schedId = id;
+  
+  var data = {};
+  data["schedId"] = schedId;
+  data["date"] = date;
+
+
+  var js = JSON.stringify(data);
+  console.log("JS:" + js);
+  var xhr = new XMLHttpRequest();
+  xhr.open("POST", getWeek_url, true);
+
+  // send the collected data as JSON
   xhr.send(js);
 
-// This will process results and update HTML as appropriate. 
+  // This will process results and update HTML as appropriate. 
   xhr.onloadend = function () {
+    console.log(xhr);
+    console.log(xhr.request);
+    if (xhr.readyState == XMLHttpRequest.DONE) {
+      console.log ("XHR:" + xhr.responseText);
+      processGetWeek(xhr.responseText);
+    } else {
+      processGetWeek("N/A");
+    }
+  };
+}
+
+
+function processGetWeek(result){
+  var table = document.getElementById('weekDisplay');
+  var js = JSON.parse(result);
+  
+  var week = js["week"];
+  var blockHTML = "<tr> <td> Monday </td> <td> Tuesday </td> <td> Wednesday </td> <td> Thursday </td> <td> Friday </td> </tr> ";
+  if(week["days"].length>0){
+  for(var i = 0; i < week["days"][0]["timeslots"].length; i++){
+    blockHTML += "<tr>";
+    for(var j = 0; j < 5; j++){
+      blockHTML += "<td>";
+      for(var k = 0; k < week["days"].length; k++){
+        if(week["days"][k]["weekday"] == j){
+          if(week["days"][k]["timeslots"][i]["open"] == true){
+		    if(week["days"][k]["timeslots"][i]["user"]=""){
+  		      blockHTML+= "\n</p><p><button>CreateMeeting</button></p><p><button onClick=\"cancelMeeting(" + ["days"][k]["timeslots"][i]["id"] + ")>Close</button></p>";
+  		    }
+  		    else{
+  		      blockHTML+= "\n</p><p>RESERVED</p><button>Cancel Meeting</button><p></p>";
+  	        }
+  	      }
+  	      else{
+  		
+  		  blockHTML += "\n</p><p>CLOSED</p><p><button>Open</button></p>";}
+  	      }
+  	    }
+  	    blockHTML += "</td>";
+  	  }
+  	  blockHTML += "</tr>";
+    }
+  }
+    table.innerHTML = blockHTML;      
+}
+
+
+
+function createMeeting(id, user) {
+	var createMeetingId = parseInt(id);
+	var user = user;
+
+	var data = {};
+	data["closeTimeslotId"] = createMeetingId;
+	date["user"] = user;
+
+	var js = JSON.stringify(data);
+	console.log("JS:" + js);
+	var xhr = new XMLHttpRequest();
+	xhr.open("POST", createMeeting_url, true);
+ 
+	// send the collected data as JSON
+	xhr.send(js);
+
+	// This will process results and update HTML as appropriate. 
+  	xhr.onloadend = function () {
     console.log(xhr);
     console.log(xhr.request);
     if (xhr.readyState == XMLHttpRequest.DONE) {
@@ -107,23 +150,23 @@ date["user"] = user;
 }
 
 function cancelMeeting(id, password) {
-var cancelMeetingId = pasreInt(id);
-var password = password;
+	var cancelMeetingId = pasreInt(id);
+	var password = password;
 
-var data = {};
-data["cancelMeetingId"] = parseInt(cancelMeetingId);
-data["password"] = password;
+	var data = {};
+	data["cancelMeetingId"] = parseInt(cancelMeetingId);
+	data["password"] = password;
 
- var js = JSON.stringify(data);
- console.log("JS:" + js);
- var xhr = new XMLHttpRequest();
- xhr.open("POST", cancelMeeting_url, true);
+	var js = JSON.stringify(data);
+ 	console.log("JS:" + js);
+ 	var xhr = new XMLHttpRequest();
+ 	xhr.open("POST", cancelMeeting_url, true);
  
- // send the collected data as JSON
-  xhr.send(js);
+ 	// send the collected data as JSON
+  	xhr.send(js);
 
-// This will process results and update HTML as appropriate. 
-  xhr.onloadend = function () {
+	// This will process results and update HTML as appropriate. 
+  	xhr.onloadend = function () {
     console.log(xhr);
     console.log(xhr.request);
     if (xhr.readyState == XMLHttpRequest.DONE) {
@@ -174,9 +217,10 @@ data["password"] = password;
 	
 	</style>
 <body>
-
 <p>
-Schedule List:
+<button onClick="JavaScript:handleGetSchedules()">Display Schedules</button>
+Schedule List: 
+
 
 <table id="schedList"></table>
 </p>
