@@ -167,7 +167,7 @@ function processGetWeek(result){
   var js = JSON.parse(result);
   
   var week = js["week"];
-  var blockHTML = "<tr> <td> Monday </td> <td> Tuesday </td> <td> Wensday </td> <td> Thursday </td> <td> Friday </td> </tr> ";
+  var blockHTML = "<tr> <td> Monday </td> <td> Tuesday </td> <td> Wednesday </td> <td> Thursday </td> <td> Friday </td> </tr> ";
   if(week["days"].length>0){
   for(var i = 0; i < week["days"][0]["timeslots"].length; i++){
     blockHTML += "<tr>";
@@ -352,7 +352,7 @@ Schedule List:
 </p>
 
 <p>
-<button>add time to begining</button>
+<button>add time to beginning</button>
 <button border-color="red">Delete Schedule</button>
 <button>add time to end</button>
 </p>
