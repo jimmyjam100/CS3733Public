@@ -5,7 +5,7 @@
 var getWeek_url = "https://7au48di44j.execute-api.us-east-2.amazonaws.com/Alpha/getweek";
 var createMeeting_url = "https://7au48di44j.execute-api.us-east-2.amazonaws.com/Alpha/createmeeting";
 var cancelMeeting_url = "https://7au48di44j.execute-api.us-east-2.amazonaws.com/Alpha/cancelmeeting";
-var searchOpen_url = "";
+var searchOpen_url = "https://7au48di44j.execute-api.us-east-2.amazonaws.com/Alpha/getallopentimeslots";
 var getAllSchedules_url ="https://7au48di44j.execute-api.us-east-2.amazonaws.com/Alpha/getallschedules";
 
 
@@ -28,6 +28,7 @@ function handleGetSchedules(){
     if (xhr.readyState == XMLHttpRequest.DONE) {
       console.log ("XHR:" + xhr.responseText);
       processGetSchedules(xhr.responseText);
+    } else {
       processGetSchedules("N/A");
     }
   };
@@ -42,7 +43,7 @@ var js = JSON.parse(result);
 var schedListItems = js["schedList"];
 var listHTML = "<dl>";
 	for(var i = 0; i<schedListItems.length; i++){
-	listHTML += "<dt>" +  schedListItems[i]["name"]  + "<button onClick=\"JavaScript:handleDisplayWeek(" + schedListItems[i]["id"] + ")\">View Schedule</button>" + "</dt>";
+	listHTML += "<dt>" +  schedListItems[i]["name"]  + "<button onClick=\"JavaScript:handleDisplayWeek(" + schedListItems[i]["id"] + ")\">View Schedule</button>" + "<button>Delete</button>"+ "</dt>";
 
 	}
 	listHTML += "</ul>";
@@ -84,6 +85,7 @@ function handleDisplayWeek(id) {
 }
 
 
+
 function processGetWeek(result){
   var table = document.getElementById('weekDisplay');
   var js = JSON.parse(result);
@@ -97,16 +99,15 @@ function processGetWeek(result){
       blockHTML += "<td>";
       for(var k = 0; k < week["days"].length; k++){
         if(week["days"][k]["weekday"] == j){
-          if(week["days"][k]["timeslots"][i]["open"] == true){
-		    if(week["days"][k]["timeslots"][i]["user"]=""){
-  		      blockHTML+= "\n</p><p><button>CreateMeeting</button></p><p><button onClick=\"cancelMeeting(" + ["days"][k]["timeslots"][i]["id"] + ")>Close</button></p>";
+          if(week["days"][k]["timeslots"][i]["open"]){
+		    if(week["days"][k]["timeslots"][i]["user"]==""){
+  		      blockHTML+= "\n</p><p><button>CreateMeeting</button></p><p><button>Close</button></p>";
   		    }
   		    else{
   		      blockHTML+= "\n</p><p>RESERVED</p><button>Cancel Meeting</button><p></p>";
   	        }
   	      }
   	      else{
-  		
   		  blockHTML += "\n</p><p>CLOSED</p><p><button>Open</button></p>";}
   	      }
   	    }
@@ -115,7 +116,8 @@ function processGetWeek(result){
   	  blockHTML += "</tr>";
     }
   }
-    table.innerHTML = blockHTML;      
+    table.innerHTML = blockHTML;
+      
 }
 
 
@@ -228,11 +230,18 @@ Schedule List:
 
 <p id="scheduleName">
 </p>
+<p>
+<input type="date" id="weekDate" placeHolder="Enter day from schedule"></input>
+<input type = "hidden" id="displayWeekScheduleId" ></input>
+</p>
+<p>
+<table id='weekDisplay' border="1">
+
+</table>
+</p>
 
 
-
-
-
+<!--
 <button style = "float: left; margin-left: 790px; margin-top: 15px"> Select Schedule </button>
 <button style = "float: left; margin-left: 50px; margin-top: 15px"> Retrieve Open Time Slots </button> 
 <hr style= "float: left; width: 100%; height:1px;" />
@@ -250,5 +259,6 @@ Schedule List:
 <table id='weekDisplay' border="1">
 
 </table>
+-->
 </body>
 </html>
