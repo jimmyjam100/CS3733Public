@@ -34,21 +34,9 @@ import edu.wpi.cs.yidun.db.ScheduleDAO;
 
 public class GetAllOpenTimeslotsLambda implements RequestStreamHandler {
 	
-	ArrayList<Timeslot> getTimeslots(int id) throws NumberFormatException, Exception {
+	Schedule getTimeslots(int id) throws NumberFormatException, Exception {
 		ScheduleDAO dao = new ScheduleDAO();
-		Schedule sched = dao.getSchedule(id);
-		ArrayList<Timeslot> timeslots = new ArrayList<Timeslot>();
-		for(Week w : sched.getWeeks()) {
-			for(Day d : w.getDays()) {
-				for(Timeslot t : d.getTimeslots()) {
-					if(t.isOpen()) {
-						timeslots.add(t);
-					}
-				}
-			}
-		}
-
-		return timeslots;
+		return dao.getSchedule(id);
 	}
 
     @Override
@@ -98,15 +86,15 @@ public class GetAllOpenTimeslotsLambda implements RequestStreamHandler {
 
 		if (!processed) {
 			GetAllOpenTimeslotsRequest req = new Gson().fromJson(body, GetAllOpenTimeslotsRequest.class);
-			ArrayList<Timeslot> timeslots = null;
+			Schedule sched = null;
 			GetAllOpenTimeslotsResponse resp;
 			try {
-				timeslots = getTimeslots(req.id);
-				if (timeslots == null) {
+				sched = getTimeslots(req.id);
+				if (sched == null) {
 					resp = new GetAllOpenTimeslotsResponse(null, 400);
 				}
 				else {
-					resp = new GetAllOpenTimeslotsResponse(timeslots, 200);
+					resp = new GetAllOpenTimeslotsResponse(sched, 200);
 				}
 			} catch (java.text.ParseException e) {
 				resp = new GetAllOpenTimeslotsResponse(null, 401);

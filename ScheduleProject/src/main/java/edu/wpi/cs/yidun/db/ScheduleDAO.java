@@ -107,7 +107,7 @@ public class ScheduleDAO {
     		
     		Day currentDay = new Day(0, startDate); //This init shouldn't matter
     		Week currentWeek = new Week(0);
-    		int dayNum = startDate.toLocalDate().getDayOfWeek().getValue(),
+    		int dayNum = startDate.toLocalDate().getDayOfWeek().getValue()-1,
     				weekNum = 1;
     		
     		weeks.add(currentWeek);
