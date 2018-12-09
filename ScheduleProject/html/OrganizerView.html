@@ -177,7 +177,7 @@ function processGetWeek(result){
         if(week["days"][k]["weekday"] == j){
           if(week["days"][k]["timeslots"][i]["open"] == true){
 		    if(week["days"][k]["timeslots"][i]["user"]==""){
-  		      blockHTML+= "\n</p><p><button>Create Meeting</button></p>";
+  		      blockHTML+= "\n</p><p><button>CreateMeeting</button></p><p><button>Close</button></p>";
   		    }
   		    else{
   		      blockHTML+= "\n</p><p>RESERVED</p><button>Cancel Meeting</button><p></p>";
@@ -194,6 +194,8 @@ function processGetWeek(result){
     }
   }
     table.innerHTML = blockHTML;
+      
+      
 }
 
 
