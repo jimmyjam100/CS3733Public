@@ -17,15 +17,10 @@ public class Timeslot {
 	}
 	
 	public boolean cancelMeeting(){
-		if (open) {
-			return false;
-		}
-		else {
-			open = true;
-			user = "";
-			password = "";
-			return true;
-		}
+		open = true;
+		user = "";
+		password = "";
+		return true;
 	}
 	
 	public boolean open() {

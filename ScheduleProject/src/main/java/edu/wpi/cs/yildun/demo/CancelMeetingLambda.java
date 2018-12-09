@@ -27,9 +27,9 @@ public class CancelMeetingLambda implements RequestStreamHandler {
 		ts.cancelMeeting();
 		dao.updateTimeslot(ts);
 	}
-	boolean validate(int id, String password) throws Exception {
+	boolean validate(int id, int schedId, String password) throws Exception {
 		ScheduleDAO dao = new ScheduleDAO();
-		return dao.getTimeslot(id).getPassword().equals(password);
+		return dao.getTimeslot(id).getPassword().equals(password) || dao.getSchedule(schedId).getPassword().equals(password);
 	}
 	
     @Override
@@ -81,7 +81,7 @@ public class CancelMeetingLambda implements RequestStreamHandler {
 			CancelMeetingRequest req = new Gson().fromJson(body, CancelMeetingRequest.class);
 			CancelMeetingResponse resp = new CancelMeetingResponse(400);;
 			try {
-				if (validate(req.id, req.password)) {
+				if (validate(req.id, req.schedId, req.password)) {
 					cancelMeeting(req.id);
 					resp = new CancelMeetingResponse(200);
 				}
