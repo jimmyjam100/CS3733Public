@@ -43,9 +43,8 @@ var js = JSON.parse(result);
 
 var schedListItems = js["schedList"];
 var listHTML = "<dl>";
-listHTML += "<dt>" +  "Schedule List: ";
 	for(var i = 0; i<schedListItems.length; i++){
-		listHTML += "<dt>" +  schedListItems[i]["name"] + " " + "<button onClick=\"JavaScript:handleDisplayWeek(" + schedListItems[i]["id"] + ")\">View Schedule</button>"
+		listHTML += "<dt>" +  schedListItems[i]["name"]  + "<button onClick=\"JavaScript:handleDisplayWeek(" + schedListItems[i]["id"] + ")\">View Schedule</button>"
 														+ "<button onClick=\"JavaScript:handleGetOpenSlots(" + schedListItems[i]["id"] + ")\">View Open Timeslots</button>";
 	}
 	listHTML += "</ul>";
@@ -100,22 +99,29 @@ function processGetWeek(result){
       blockHTML += "<td>";
       for(var k = 0; k < week["days"].length; k++){
         if(week["days"][k]["weekday"] == j){
-        if(week["days"][k]["timeslots"][i]["time"]["minute"]=="0"){
-        blockHTML += week["days"][k]["timeslots"][i]["time"]["hour"] + ":" + week["days"][k]["timeslots"][i]["time"]["minute"]+"0";
-        }
-        else{
-        blockHTML += week["days"][k]["timeslots"][i]["time"]["hour"] + ":" + week["days"][k]["timeslots"][i]["time"]["minute"];
-        }
+<<<<<<< HEAD
           if(week["days"][k]["timeslots"][i]["open"] == true){
 		    if(week["days"][k]["timeslots"][i]["user"]==""){
-  		      blockHTML+= "\n</p><p><button onClick=\"JavaScript:createMeeting(" + week["days"][k]["timeslots"][i]["id"] + ")\">Create Meeting</button></p><p></p>";
+  		      blockHTML+= "\n</p><p><button onClick=\"JavaScript:createMeeting(" + week["days"][k]["timeslots"][i]["id"] + ")\">Create Meeting</button></p>";
+=======
+<<<<<<< HEAD
+          if(week["days"][k]["timeslots"][i]["open"] == true){
+		    if(week["days"][k]["timeslots"][i]["user"]=""){
+  		      blockHTML+= "\n</p><p><button>CreateMeeting</button></p><p><button onClick=\"cancelMeeting(\"week[\"days\"][k][\"timeslots\"][i][\"id\"]\")>Close</button></p>";
+=======
+          if(week["days"][k]["timeslots"][i]["open"]){
+		    if(week["days"][k]["timeslots"][i]["user"]==""){
+  		      blockHTML+= "\n</p><p><button onClick=\"JavaScript:createMeeting(" + week["days"][k]["timeslots"][i]["id"] + ")\">CreateMeeting</button></p>";
+>>>>>>> 9c062603961d23a8e55b362397be7ece6d67768f
+>>>>>>> 8baf6c0fb52210c15307f1af2fd3a0a71d845809
   		    }
   		    else{
-  		      blockHTML+= "\n</p><p id = \"reservation\">RESERVED BY:</p>"; 
-  		      blockHTML+= week["days"][k]["timeslots"][i]["user"]
-  		      blockHTML+="\n<button onClick=\"JavaScript:cancelMeeting(" + week["days"][k]["timeslots"][i]["id"] + ")\">Cancel Meeting</button><p></p>";
+  		      blockHTML+= "\n</p><p>RESERVED</p><button onClick=\"JavaScript:cancelMeeting(" + week["days"][k]["timeslots"][i]["id"] + ")\">Cancel Meeting</button><p></p>"; 
   	        }
   	      }
+  	      else{
+  		
+  		  blockHTML += "\n</p><p>CLOSED</p><p><button>Open</button></p>";}
   	      }
   	    }
   	    blockHTML += "</td>";
@@ -229,9 +235,6 @@ data["user"] = user;
     }
   };  
 }
-
-
-
 function createResponse(result) {
   var table = document.getElementById('weekDisplay');
   var js = JSON.parse(result);
@@ -248,12 +251,10 @@ while(pass == null){
 }
 var cancelMeetingId = parseInt(id);
 var password = pass;
-var schedId = parseInt(document.getElementById("displayWeekScheduleId").value);
 
 var data = {};
 data["id"] = parseInt(cancelMeetingId);
 data["password"] = password;
-data["schedId"] = schedId;
 
  var js = JSON.stringify(data);
  console.log("JS:" + js);
@@ -317,12 +318,14 @@ data["schedId"] = schedId;
 <body>
 <p>
 <button onClick="JavaScript:handleGetSchedules()">Display Schedules</button>
+Schedule List: 
+
+<input type="date" id="weekDate" placeHolder="Enter day from schedule"></input>
 <table id="schedList"></table>
 </p>
 <hr width=100%></hr>
 
 <p>
-<input type="date" id="weekDate" placeHolder="Enter day from schedule"></input>
 <input type = "hidden" id="displayWeekScheduleId" ></input>
 </p>
 

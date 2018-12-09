@@ -94,9 +94,8 @@ var js = JSON.parse(result);
 
 var schedListItems = js["schedList"];
 var listHTML = "<dl>";
-listHTML += "<dt>" +  "Schedule List: ";
 	for(var i = 0; i<schedListItems.length; i++){
-	listHTML += "<dt>" +  schedListItems[i]["name"]  + " " + "<button onClick=\"JavaScript:handleDisplayWeek(" + schedListItems[i]["id"] + ")\">View Schedule</button> <button onClick=\"JavaScript:deleteFunction(" + schedListItems[i]["id"] + ")\">Delete</button>"+ "</dt>";
+	listHTML += "<dt>" +  schedListItems[i]["name"]  + "<button onClick=\"JavaScript:handleDisplayWeek(" + schedListItems[i]["id"] + ")\">View Schedule</button> <button onClick=\"JavaScript:deleteFunction(" + schedListItems[i]["id"] + ")\">Delete</button>"+ "</dt>";
 
 	}
 	listHTML += "</ul>";
@@ -186,10 +185,10 @@ function processGetWeek(result){
         }
           if(week["days"][k]["timeslots"][i]["open"] == true){
 		    if(week["days"][k]["timeslots"][i]["user"]==""){
-  		      blockHTML+= "\n</p><p><button onClick=\"JavaScript:createMeeting(" + week["days"][k]["timeslots"][i]["id"] + ")\">Create Meeting</button></p><p><button onClick=\"JavaScript:closeTimeslot(" + week["days"][k]["timeslots"][i]["id"] + ")\">Close</button></p>";
+  		      blockHTML+= "\n</p><p><button onClick=\"JavaScript:createMeeting(" + week["days"][k]["timeslots"][i]["id"] + ")\">CreateMeeting</button></p><p><button onClick=\"JavaScript:closeTimeslot(" + week["days"][k]["timeslots"][i]["id"] + ")\">Close</button></p>";
   		    }
   		    else{
-  		      blockHTML+= "\n</p><p id = \"reservation\">RESERVED BY:</p>"; 
+  		      blockHTML+= "\n</p><p id = \"reservation\">RESERVED BY</p>"; 
   		      blockHTML+= week["days"][k]["timeslots"][i]["user"]
   		      blockHTML+="\n<button onClick=\"JavaScript:cancelMeeting(" + week["days"][k]["timeslots"][i]["id"] + ")\">Cancel Meeting</button><p></p>";
   		      
@@ -209,9 +208,9 @@ function processGetWeek(result){
     }
   }
     table.innerHTML = blockHTML;
+      
+      
 }
-
-
 
 function createMeeting(id){
 var pass = prompt("please enter a name:", "name");
@@ -247,9 +246,6 @@ data["user"] = user;
     }
   };  
 }
-
-
-
 function createResponse(result) {
   var table = document.getElementById('weekDisplay');
   var js = JSON.parse(result);
@@ -452,6 +448,7 @@ data["schedId"] = schedId;
 </p>
 <p>
 <button onClick="JavaScript:handleGetSchedules()">Display Schedules</button>
+Schedule List: 
 <input type="date" id="weekDate" placeHolder="Enter day from schedule"></input>
 
 </p>
