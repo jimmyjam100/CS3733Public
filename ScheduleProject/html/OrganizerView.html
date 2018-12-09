@@ -8,6 +8,7 @@ var openTimeslot_url = "";
 var closeTimeslot_url = "https://7au48di44j.execute-api.us-east-2.amazonaws.com/Alpha/closetimeslot";
 var getAllSchedules_url ="https://7au48di44j.execute-api.us-east-2.amazonaws.com/Alpha/getallschedules";
 var getWeek_url =  "https://7au48di44j.execute-api.us-east-2.amazonaws.com/Alpha/getweek";
+var createMeeting_url = "https://7au48di44j.execute-api.us-east-2.amazonaws.com/Alpha/createmeeting";
 
 
 
@@ -94,7 +95,7 @@ var js = JSON.parse(result);
 var schedListItems = js["schedList"];
 var listHTML = "<dl>";
 	for(var i = 0; i<schedListItems.length; i++){
-	listHTML += "<dt>" +  schedListItems[i]["name"]  + "<button onClick=\"JavaScript:handleDisplayWeek(" + schedListItems[i]["id"] + ")\">View Schedule</button>" + "<button>Delete</button>"+ "</dt>";
+	listHTML += "<dt>" +  schedListItems[i]["name"]  + "<button onClick=\"JavaScript:handleDisplayWeek(" + schedListItems[i]["id"] + ")\">View Schedule</button> <button onClick=\"JavaScript:deleteFunction(" + schedListItems[i]["id"] + ")\">Delete</button>"+ "</dt>";
 
 	}
 	listHTML += "</ul>";
@@ -135,6 +136,7 @@ function handleDisplayWeek(id) {
 
 	var date = document.getElementById("weekDate").value;
 	var schedId = id;
+	document.getElementById("displayWeekScheduleId").value = id;
   
   var data = {};
   data["schedId"] = schedId;
@@ -177,10 +179,10 @@ function processGetWeek(result){
         if(week["days"][k]["weekday"] == j){
           if(week["days"][k]["timeslots"][i]["open"] == true){
 		    if(week["days"][k]["timeslots"][i]["user"]==""){
-  		      blockHTML+= "\n</p><p><button>CreateMeeting</button></p><p><button>Close</button></p>";
+  		      blockHTML+= "\n</p><p><button onClick=\"JavaScript:createMeeting(" + week["days"][k]["timeslots"][i]["id"] + ")\">CreateMeeting</button></p><p><button>Close</button></p>";
   		    }
   		    else{
-  		      blockHTML+= "\n</p><p>RESERVED</p><button>Cancel Meeting</button><p></p>";
+  		      blockHTML+= "\n</p><p>RESERVED</p><button onClick=\"JavaScript:cancelMeeting(" + week["days"][k]["timeslots"][i]["id"] + ")\">Cancel Meeting</button><p></p>"; 
   	        }
   	      }
   	      else{
@@ -198,9 +200,48 @@ function processGetWeek(result){
       
 }
 
+function createMeeting(id){
+var pass = prompt("please enter a name:", "name");
+while(pass == null){
+  pass = prompt("please enter a name:", "name");
+}
+var createId = parseInt(id);
+var user = pass;
+
+var data = {};
+data["id"] = createId;
+data["user"] = user;
+
+ var js = JSON.stringify(data);
+ console.log("JS:" + js);
+ var xhr = new XMLHttpRequest();
+ xhr.open("POST", createMeeting_url, true);
+ 
+ // send the collected data as JSON
+  xhr.send(js);
+
+// This will process results and update HTML as appropriate. 
+  xhr.onloadend = function () {
+    console.log(xhr);
+    console.log(xhr.request);
+    if (xhr.readyState == XMLHttpRequest.DONE) {
+      console.log ("XHR:" + xhr.responseText);
+      createResponse(xhr.responseText);
+      handleDisplayWeek(document.getElementById("displayWeekScheduleId").value);
+    } else {
+    createResponse("N/A");
+    handleDisplayWeek(document.getElementById("displayWeekScheduleId").value);
+    }
+  };  
+}
+function createResponse(result) {
+  var table = document.getElementById('weekDisplay');
+  var js = JSON.parse(result);
+  confirm("Use this password to edit schedule. DO NOT LOSE! " + js["timeslot"]["password"]);
+}
 
 /*function closeTimeslot(id, password, schedId) {
-var closeTimeslotId = pasreInt(id);
+var closeTimeslotId = parseInt(id);
 var password = password;
 var schedId = schedId;
 
@@ -231,7 +272,7 @@ data["schedId"] = schedId;
 }
 
 function openTimeslot(id) {
-var openTimeslotId = pasreInt(id);
+var openTimeslotId = parseInt(id);
 
 var data = {};
 data["id"] = openTimeslotId;
@@ -256,10 +297,14 @@ data["id"] = openTimeslotId;
     }
   };
   }
-  
-function delete(id, password) {
-var deleteId = pasreInt(id);
-var password = password;
+  */
+function deleteFunction(id) {
+var pass = prompt("please enter a password:", "password");
+while(pass == null){
+  pass = prompt("please enter a password:", "password");
+}
+var deleteId = parseInt(id);
+var password = pass;
 
 var data = {};
 data["id"] = deleteId;
@@ -279,19 +324,23 @@ data["password"] = password;
     console.log(xhr.request);
     if (xhr.readyState == XMLHttpRequest.DONE) {
       console.log ("XHR:" + xhr.responseText);
-      handleDisplayWeek();
+      handleGetSchedules();
     } else {
-      handleDisplayWeek();
+    handleGetSchedules();
     }
   };  
   }
   
-function cancelMeeting(id, password) {
-var cancelMeetingId = pasreInt(id);
-var password = password;
+function cancelMeeting(id) {
+var pass = prompt("please enter a password:", "password");
+while(pass == null){
+  pass = prompt("please enter a password:", "password");
+}
+var cancelMeetingId = parseInt(id);
+var password = pass;
 
 var data = {};
-data["cancelMeetingId"] = parseInt(cancelMeetingId);
+data["id"] = parseInt(cancelMeetingId);
 data["password"] = password;
 
  var js = JSON.stringify(data);
@@ -308,12 +357,12 @@ data["password"] = password;
     console.log(xhr.request);
     if (xhr.readyState == XMLHttpRequest.DONE) {
       console.log ("XHR:" + xhr.responseText);
-      handleDisplayWeek();
+      handleDisplayWeek(document.getElementById("displayWeekScheduleId").value);
     } else {
-      handleDisplayWeek();
+      handleDisplayWeek(document.getElementById("displayWeekScheduleId").value);
     }
   };
-} */
+}
 
 </script>
 </head>

@@ -6,7 +6,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.util.Random;
 
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -20,29 +19,17 @@ import com.google.gson.Gson;
 import edu.wpi.cs.yidun.db.ScheduleDAO;
 import edu.wpi.cs.yidun.model.Timeslot;
 
-public class CreateMeetingLambda implements RequestStreamHandler {
+public class OpenTImeslotLambda implements RequestStreamHandler {
 	
-	String randPassword() {
-	    int leftLimit = 97; // letter 'a'
-	    int rightLimit = 121; // letter 'Z'
-	    int targetStringLength = 10;
-	    Random random = new Random();
-	    StringBuilder buffer = new StringBuilder(targetStringLength);
-	    for (int i = 0; i < targetStringLength; i++) {
-	        int randomLimitedInt = leftLimit + (int) 
-	          (random.nextFloat() * (rightLimit - leftLimit + 1));
-	        buffer.append((char) randomLimitedInt);
-	    }
-	    String generatedString = buffer.toString();
-	    return generatedString;
-	}
-	
-	Timeslot createMeeting(int id, String name) throws Exception {
+	void openTimeslot(int id) throws Exception{
 		ScheduleDAO dao = new ScheduleDAO();
 		Timeslot ts = dao.getTimeslot(id);
-		ts.makeMeeting(name, randPassword());
+		ts.open();
 		dao.updateTimeslot(ts);
-		return ts;
+	}
+	boolean validate(int id, String password) throws Exception {
+		ScheduleDAO dao = new ScheduleDAO();
+		return dao.getSchedule(id).getPassword().equals(password);
 	}
 
     @Override
@@ -58,7 +45,7 @@ public class CreateMeetingLambda implements RequestStreamHandler {
 		JSONObject responseJson = new JSONObject();
 		responseJson.put("headers", headerJson);
 
-		CreateMeetingResponse response = null;
+		OpenTimeslotResponse response = null;
 		
 		// extract body from incoming HTTP POST request. If any error, then return 422 error
 		String body;
@@ -72,7 +59,7 @@ public class CreateMeetingLambda implements RequestStreamHandler {
 			String method = (String) event.get("httpMethod");
 			if (method != null && method.equalsIgnoreCase("OPTIONS")) {
 				logger.log("Options request");
-				response = new CreateMeetingResponse(null, 200);  // OPTIONS needs a 200 response
+				response = new OpenTimeslotResponse(200);  // OPTIONS needs a 200 response
 		        responseJson.put("body", new Gson().toJson(response));
 		        processed = true;
 		        body = null;
@@ -84,30 +71,30 @@ public class CreateMeetingLambda implements RequestStreamHandler {
 			}
 		} catch (ParseException pe) {
 			logger.log(pe.toString());
-			response = new CreateMeetingResponse(null, 422);  // unable to process input
+			response = new OpenTimeslotResponse(422);  // unable to process input
 	        responseJson.put("body", new Gson().toJson(response));
 	        processed = true;
 	        body = null;
 		}
 
 		if (!processed) {
-			CreateMeetingRequest req = new Gson().fromJson(body, CreateMeetingRequest.class);
-			CreateMeetingResponse resp;
-			Timeslot ret = null;
-			if(req.user == "") {
-				resp = new CreateMeetingResponse(null, 400);
-			}
-			else {
-				try {
-					ret = createMeeting(req.id, req.user);
-					resp = new CreateMeetingResponse(ret, 200);
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-					resp = new CreateMeetingResponse(null, 400);
+			OpenTimeslotRequest req = new Gson().fromJson(body, OpenTimeslotRequest.class);
+			OpenTimeslotResponse resp = new OpenTimeslotResponse(400);
+			try {
+				if (validate(req.schedId, req.password)) {
+					openTimeslot(req.id);
+					resp = new OpenTimeslotResponse(200);
+				}
+				else {
+					resp = new OpenTimeslotResponse(420);
 				}
 
+			} catch (Exception e) {
+				resp = new OpenTimeslotResponse(400);
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
+
 			// compute proper response
 	        responseJson.put("body", new Gson().toJson(resp));  
 		}

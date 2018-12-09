@@ -17,6 +17,7 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Scanner;
 import java.util.List;
+import java.util.Random;
 import java.util.ArrayList;
 
 import org.joda.time.Weeks;
@@ -51,6 +52,22 @@ public class LambdaFunctionHandler implements RequestStreamHandler {
 
 	public LambdaLogger logger = null;
 	
+	public static String randString() {
+		  
+	    int leftLimit = 97; // letter 'a'
+	    int rightLimit = 122; // letter 'z'
+	    int targetStringLength = 10;
+	    Random random = new Random();
+	    StringBuilder buffer = new StringBuilder(targetStringLength);
+	    for (int i = 0; i < targetStringLength; i++) {
+	        int randomLimitedInt = leftLimit + (int) 
+	          (random.nextFloat() * (rightLimit - leftLimit + 1));
+	        buffer.append((char) randomLimitedInt);
+	    }
+	    String generatedString = buffer.toString();
+	    return generatedString;
+	}
+	
 	public static Date resetTime (Date d) {
 	    Calendar cal = new GregorianCalendar();
 	    cal.setTime(d);
@@ -80,7 +97,7 @@ public class LambdaFunctionHandler implements RequestStreamHandler {
 	}
 	
 	public static Schedule newSchedule(String n, Date sD, Date eD, LocalTime sT, LocalTime eT, int timeslotL) {
-		Schedule temp = new Schedule(sD, eD, sT, eT, n, "password", timeslotL);
+		Schedule temp = new Schedule(sD, eD, sT, eT, n, randString(), timeslotL);
 		Calendar cal = Calendar.getInstance();
 		cal.setTime(sD);
 		for(int i = 0; cal.getTime().before(eD); i++) {
@@ -111,14 +128,9 @@ public class LambdaFunctionHandler implements RequestStreamHandler {
 	
 	boolean createSchedule(String n, Date sD, Date eD, LocalTime sT, LocalTime eT, int timeslotL) throws Exception {
 		Schedule temp = newSchedule(n, sD, eD, sT, eT, timeslotL);
-		
-		/*if (logger != null) { logger.log("in createConstant"); }
 		ScheduleDAO dao = new ScheduleDAO();
 		
-		// check if present
-		//Schedule exist = dao.getSchedule(n);
-		Schedule sched = new Schedule (sD);
-		return dao.addSchedule(sched);*/
+		dao.addSchedule(temp);
 		return true;
 	}
 	
