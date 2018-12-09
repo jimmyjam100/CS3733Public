@@ -185,7 +185,7 @@ function processGetWeek(result){
         }
           if(week["days"][k]["timeslots"][i]["open"] == true){
 		    if(week["days"][k]["timeslots"][i]["user"]==""){
-  		      blockHTML+= "\n</p><p><button onClick=\"JavaScript:createMeeting(" + week["days"][k]["timeslots"][i]["id"] + ")\">CreateMeeting</button></p><p><button onClick=\"JavaScript:closeTimeslot(" + week["days"][k]["timeslots"][i]["id"] + ")\">Close</button></p>";
+  		      blockHTML+= "\n</p><p></p><p><button onClick=\"JavaScript:closeTimeslot(" + week["days"][k]["timeslots"][i]["id"] + ")\">Close</button></p>";
   		    }
   		    else{
   		      blockHTML+= "\n</p><p id = \"reservation\">RESERVED BY</p>"; 
