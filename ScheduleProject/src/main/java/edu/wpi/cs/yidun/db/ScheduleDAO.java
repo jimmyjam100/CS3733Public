@@ -217,6 +217,21 @@ public class ScheduleDAO {
     	}
     }
     /**
+     * Updates the modifiable information of a Schedule already in the database
+     * @param s the instance of the schedule with changed data
+     * @throws Exception
+     */
+    public void updateSchedule(Schedule s) throws Exception {
+    	PreparedStatement updateSchedule = conn.prepareStatement(
+    			"UPDATE Schedules SET startDate=?, endDate=?");
+    	
+    	updateSchedule.setDate(1, new Date(s.getStartDate().getTime()));
+    	updateSchedule.setDate(2, new Date(s.getEndDate().getTime()));
+    	
+    	updateSchedule.executeUpdate();
+    	updateSchedule.close();
+    }
+    /**
      * Updates the modifiable information of a Timeslot already in the database
      * @param t The instance of the timeslot with changed data
      * @throws Exception
