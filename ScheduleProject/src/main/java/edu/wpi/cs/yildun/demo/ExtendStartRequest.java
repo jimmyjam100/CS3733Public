@@ -4,9 +4,9 @@ import java.util.Date;
 
 public class ExtendStartRequest {
 	int id;
-	Date newDate;
+	String newDate;
 	String password;
-	public ExtendStartRequest(int id, Date newDate, String password) {
+	public ExtendStartRequest(int id, String newDate, String password) {
 		this.id = id;
 		this.newDate = newDate;
 		this.password = password;

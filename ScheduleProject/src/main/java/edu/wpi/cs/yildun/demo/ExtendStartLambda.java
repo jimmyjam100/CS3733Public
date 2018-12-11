@@ -35,12 +35,12 @@ public class ExtendStartLambda implements RequestStreamHandler {
 		Calendar cal = Calendar.getInstance();
 		cal.setTime(d);
 		if(!cal.before(sched.getStartDate())) {
-			return false;
+			//return false;
 		}
 		ArrayList<Week> weeks = new ArrayList<Week>();
-		for(int i = 0; cal.getTime().before(sched.getStartDate()) || cal.getTime().equals(sched.getStartDate()); i++) {
+		for(int i = 0; cal.getTime().before(sched.getStartDate()); i++) {
 			Week tempWeek = new Week(i);
-			for (int j = (cal.get(Calendar.DAY_OF_WEEK)) - 2; (cal.get(Calendar.DAY_OF_WEEK)) - 2 < 5 && (cal.get(Calendar.DAY_OF_WEEK)) - 2 > -1 && (cal.getTime().before(sched.getStartDate()) || cal.getTime().equals(sched.getStartDate())); j++) {
+			for (int j = (cal.get(Calendar.DAY_OF_WEEK)) - 2; (cal.get(Calendar.DAY_OF_WEEK)) - 2 < 5 && (cal.get(Calendar.DAY_OF_WEEK)) - 2 > -1 && cal.getTime().before(sched.getStartDate()); j++) {
 				Day tempDay = new Day(j, cal.getTime());
 				
 		        int startMin = sched.getStartTime().get(ChronoField.MINUTE_OF_DAY);
@@ -123,7 +123,7 @@ public class ExtendStartLambda implements RequestStreamHandler {
 			ExtendStartResponse resp = new ExtendStartResponse(400);
 			try {
 				if (validate(req.id, req.password)) {
-					if (extendStart(req.id, req.newDate)) {
+					if (extendStart(req.id, new SimpleDateFormat("yyyy-MM-dd").parse(req.newDate))) {
 						resp = new ExtendStartResponse(200);
 					}
 					else {

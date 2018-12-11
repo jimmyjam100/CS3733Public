@@ -7,10 +7,10 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.text.SimpleDateFormat;
-import java.time.temporal.ChronoField;
+import java.time.LocalTime;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -23,55 +23,23 @@ import com.google.gson.Gson;
 
 import edu.wpi.cs.yidun.db.ScheduleDAO;
 import edu.wpi.cs.yidun.model.Day;
+import edu.wpi.cs.yidun.model.Pair;
 import edu.wpi.cs.yidun.model.Schedule;
-import edu.wpi.cs.yidun.model.Timeslot;
 import edu.wpi.cs.yidun.model.Week;
 
-public class ExtendEndLambda implements RequestStreamHandler {
+public class GetNewSchedulesLambda implements RequestStreamHandler {
 	
-	boolean extendEnd(int id, Date d) throws Exception {
-		ScheduleDAO dao = new ScheduleDAO();
-		Schedule sched = dao.getSchedule(id);
-		Calendar cal = Calendar.getInstance();
-		cal.setTime(sched.getEndDate());
-		cal.add(Calendar.DATE, 1);
-		if(!cal.before(d)) {
-			//return false;
-		}
-		ArrayList<Week> weeks = new ArrayList<Week>();
-		for(int i = 0; cal.getTime().before(d) || cal.getTime().equals(d); i++) {
-			Week tempWeek = new Week(i);
-			for (int j = (cal.get(Calendar.DAY_OF_WEEK)) - 2; (cal.get(Calendar.DAY_OF_WEEK)) - 2 < 5 && (cal.get(Calendar.DAY_OF_WEEK)) - 2 > -1 && (cal.getTime().before(d) || cal.getTime().equals(d)); j++) {
-				Day tempDay = new Day(j, cal.getTime());
-				
-		        int startMin = sched.getStartTime().get(ChronoField.MINUTE_OF_DAY);
-		        int endMin = sched.getEndTime().get(ChronoField.MINUTE_OF_DAY);
-		        for (int k = 0; k < endMin - startMin; k+=sched.getMinPerTimeslot()) {
-		       		tempDay.getTimeslots().add(new Timeslot(true, (sched.getStartTime().plusMinutes(k))));
-		       	}
-				tempWeek.addDay(tempDay);
-				cal.add(Calendar.DATE, 1);
-			}
-			while(cal.get(Calendar.DAY_OF_WEEK) - 2 != 0) {
-				cal.add(Calendar.DATE, 1);
-			}
-			weeks.add(tempWeek);
-		}
-		for(Week w : weeks) {
-			for (Day d1 : w.getDays()) {
-				for (Timeslot t : d1.getTimeslots()) {
-					dao.addTimeslot(id, t, new java.sql.Date(d1.getDate().getTime()));
-				}
-			}
-		}
-		sched.setEndDate(d);
-		dao.updateSchedule(sched);
-		return true;
-	}
 	
-	boolean validate(int id, String password) throws Exception {
+	ArrayList<Schedule> getSchedules(int hours) throws Exception { //TODO: turn this function into an SQL request
 		ScheduleDAO dao = new ScheduleDAO();
-		return dao.getSchedule(id).getPassword().equals(password);
+		ArrayList<Pair<String, Integer>> temp = dao.getSchedulesEarlier(hours);
+		ArrayList<Schedule> ret = new ArrayList<Schedule>();
+		for (Pair<String, Integer> t : temp) {
+			Schedule temp2 = new Schedule(null, null, null, null, t.getVal1(), null, 0);
+			temp2.setId(t.getVal2());
+			ret.add(temp2);
+		}
+		return ret;
 	}
 
     @Override
@@ -87,7 +55,7 @@ public class ExtendEndLambda implements RequestStreamHandler {
 		JSONObject responseJson = new JSONObject();
 		responseJson.put("headers", headerJson);
 
-		ExtendEndResponse response = null;
+		GetNewSchedulesResponse response = null;
 		
 		// extract body from incoming HTTP POST request. If any error, then return 422 error
 		String body;
@@ -101,7 +69,7 @@ public class ExtendEndLambda implements RequestStreamHandler {
 			String method = (String) event.get("httpMethod");
 			if (method != null && method.equalsIgnoreCase("OPTIONS")) {
 				logger.log("Options request");
-				response = new ExtendEndResponse(200);  // OPTIONS needs a 200 response
+				response = new GetNewSchedulesResponse(null, 200);  // OPTIONS needs a 200 response
 		        responseJson.put("body", new Gson().toJson(response));
 		        processed = true;
 		        body = null;
@@ -113,29 +81,19 @@ public class ExtendEndLambda implements RequestStreamHandler {
 			}
 		} catch (ParseException pe) {
 			logger.log(pe.toString());
-			response = new ExtendEndResponse(422);  // unable to process input
+			response = new GetNewSchedulesResponse(null, 422);  // unable to process input
 	        responseJson.put("body", new Gson().toJson(response));
 	        processed = true;
 	        body = null;
 		}
 
 		if (!processed) {
-			ExtendEndRequest req = new Gson().fromJson(body, ExtendEndRequest.class);
-			ExtendEndResponse resp = new ExtendEndResponse(400);
+			GetNewSchedulesRequest req = new Gson().fromJson(body, GetNewSchedulesRequest.class);
+			GetNewSchedulesResponse resp;
 			try {
-				if (validate(req.id, req.password)) {
-					if (extendEnd(req.id, new SimpleDateFormat("yyyy-MM-dd").parse(req.newDate))) {
-						resp = new ExtendEndResponse(200);
-					}
-					else {
-						resp = new ExtendEndResponse(421);
-					}
-				}
-				else {
-					resp = new ExtendEndResponse(420);
-				}
+				resp = new GetNewSchedulesResponse(getSchedules(req.hour), 200);
 			} catch (Exception e) {
-				resp = new ExtendEndResponse(400);
+				resp = new GetNewSchedulesResponse(null, 400);
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}

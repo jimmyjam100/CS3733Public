@@ -48,12 +48,15 @@ public class TestDAO {
 			}
 			Assert.assertEquals(ts1, ts2);
 			
-			//Assert.assertEquals(dao.getAllSchedules().size(), 1);
-			//Assert.assertEquals(dao.getSchedulesEarlier(1).size(), 1);
+			Assert.assertTrue(dao.getAllSchedules().size() > 0);
+			Assert.assertTrue(dao.getSchedulesEarlier(1).size() > 0);
 			Timeslot test = schedule.getWeeks().get(0).getDays().get(0).getTimeslots().get(0);
 			test.makeMeeting("a", "b");
 			dao.updateTimeslot(test);
 			Assert.assertEquals(dao.getTimeslot(test.getId()).getPassword(), test.getPassword());
+			schedule.getEndDate().setMonth(schedule.getEndDate().getMonth()+1);
+			dao.updateSchedule(schedule);
+			Assert.assertEquals(schedule.getEndDate().getMonth(), dao.getSchedule(schedule.getId()).getEndDate().getMonth());
 			Assert.assertTrue(dao.deleteSchedule(schedule.getId()));
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
