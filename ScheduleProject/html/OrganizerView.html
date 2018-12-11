@@ -186,7 +186,7 @@ function processGetWeek(result){
         }
           if(week["days"][k]["timeslots"][i]["open"] == true){
 		    if(week["days"][k]["timeslots"][i]["user"]==""){
-  		      blockHTML+= "\n</p><p><button onClick=\"JavaScript:createMeeting(" + week["days"][k]["timeslots"][i]["id"] + ")\">Create Meeting</button></p><p><button onClick=\"JavaScript:closeTimeslot(" + week["days"][k]["timeslots"][i]["id"] + ")\">Close</button></p>";
+  		      blockHTML+= "\n</p><p></p><p><button onClick=\"JavaScript:closeTimeslot(" + week["days"][k]["timeslots"][i]["id"] + ")\">Close</button></p>";
   		    }
   		    else{
   		      blockHTML+= "\n</p><p id = \"reservation\">RESERVED BY:</p>"; 
@@ -462,7 +462,9 @@ data["schedId"] = schedId;
 
 <p>
 <button>add time to beginning</button>
+<input type="date" id="newStartDate" placeHolder="Enter new start day"></input>
 <button>add time to end</button>
+<input type="date" id="newEndDate" placeHolder="Enter new end day"></input>
 </p>
 <p>
 

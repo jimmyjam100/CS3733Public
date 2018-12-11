@@ -115,6 +115,10 @@ function processGetWeek(result){
   		      blockHTML+= week["days"][k]["timeslots"][i]["user"]
   		      blockHTML+="\n<button onClick=\"JavaScript:cancelMeeting(" + week["days"][k]["timeslots"][i]["id"] + ")\">Cancel Meeting</button><p></p>";
   	        }
+  	       
+  	      }
+  	      else{
+  	       blockHTML+= "\n</p><p>CLOSED</p>"; 
   	      }
   	      }
   	    }
