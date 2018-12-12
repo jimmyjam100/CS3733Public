@@ -9,7 +9,8 @@ var closeTimeslot_url = "https://7au48di44j.execute-api.us-east-2.amazonaws.com/
 var getAllSchedules_url ="https://7au48di44j.execute-api.us-east-2.amazonaws.com/Alpha/getallschedules";
 var getWeek_url =  "https://7au48di44j.execute-api.us-east-2.amazonaws.com/Alpha/getweek";
 var createMeeting_url = "https://7au48di44j.execute-api.us-east-2.amazonaws.com/Alpha/createmeeting";
-
+var extendStart_url = "https://7au48di44j.execute-api.us-east-2.amazonaws.com/Alpha/extendstart";
+var extendEnd_url = "https://7au48di44j.execute-api.us-east-2.amazonaws.com/Alpha/extendend";
 
 
 
@@ -128,7 +129,6 @@ function handleGetSchedules(){
     }
   };
 }
-
 
 
 
@@ -354,6 +354,9 @@ data["schedId"] = schedId;
 }
 
 
+
+
+
 function closeTimeslot(id) {
 var pass = prompt("please enter a password:", "password");
 while(pass == null){
@@ -424,6 +427,76 @@ data["schedId"] = schedId;
   };
 }
 
+function ExtendStart(){
+var pass = prompt("please enter a password:", "password");
+while(pass == null){
+  pass = prompt("please enter a password:", "password");
+}
+	var newDate = document.getElementById("newStartDate").value;
+	var id = parseInt(document.getElementById("displayWeekScheduleId").value);
+	var password =  pass;
+	
+	var data = {};
+  	data["id"] = id;
+  	data["newDate"] = newDate;
+  	data["password"] = password;
+  	
+  var js = JSON.stringify(data);
+  console.log("JS:" + js);
+  var xhr = new XMLHttpRequest();
+  xhr.open("POST", extendStart_url, true);
+
+   // send the collected data as JSON
+  xhr.send(js);
+
+// This will process results and update HTML as appropriate. 
+  xhr.onloadend = function () {
+    console.log(xhr);
+    console.log(xhr.request);
+    if (xhr.readyState == XMLHttpRequest.DONE) {
+      console.log ("XHR:" + xhr.responseText);
+      handleDisplayWeek(document.getElementById("displayWeekScheduleId").value);
+    } else {
+      handleDisplayWeek(document.getElementById("displayWeekScheduleId").value);
+    }
+  };
+}
+
+function ExtendEnd(){
+var pass = prompt("please enter a password:", "password");
+while(pass == null){
+  pass = prompt("please enter a password:", "password");
+}
+	var newDate = document.getElementById("newEndDate").value;
+	var id = parseInt(document.getElementById("displayWeekScheduleId").value);
+	var password =  pass;
+	
+	var data = {};
+  	data["id"] = id;
+  	data["newDate"] = newDate;
+  	data["password"] = password;
+  	
+  var js = JSON.stringify(data);
+  console.log("JS:" + js);
+  var xhr = new XMLHttpRequest();
+  xhr.open("POST", extendEnd_url, true);
+
+   // send the collected data as JSON
+  xhr.send(js);
+
+// This will process results and update HTML as appropriate. 
+  xhr.onloadend = function () {
+    console.log(xhr);
+    console.log(xhr.request);
+    if (xhr.readyState == XMLHttpRequest.DONE) {
+      console.log ("XHR:" + xhr.responseText);
+      handleDisplayWeek(document.getElementById("displayWeekScheduleId").value);
+    } else {
+      handleDisplayWeek(document.getElementById("displayWeekScheduleId").value);
+    }
+  };
+}
+
 
 </script>
 </head>
@@ -461,10 +534,10 @@ data["schedId"] = schedId;
 </p>
 
 <p>
-<button>add time to beginning</button>
-<input type="date" id="newStartDate" placeHolder="Enter new start day"></input>
-<button>add time to end</button>
-<input type="date" id="newEndDate" placeHolder="Enter new end day"></input>
+<button onClick="JavaScript:ExtendStart()">add time to beginning</button>
+<input type="date" id="newStartDate"></input>
+<button onClick="JavaScript:ExtendEnd()">add time to end</button>
+<input type="date" id="newEndDate"></input>
 </p>
 <p>
 
