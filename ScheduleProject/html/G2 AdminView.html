@@ -3,7 +3,56 @@
 <head>
 <script type="text/javascript">
 var New_url = "https://7au48di44j.execute-api.us-east-2.amazonaws.com/Alpha/getnewschedules";
-var Old_url = "";
+var Old_url = "https://7au48di44j.execute-api.us-east-2.amazonaws.com/Alpha/getoldschedules";
+
+
+
+
+function handleOldSchedules(del){
+
+	var hour = document.getElementById("dayInput").value;
+	var delet = del;
+	
+	var data = {};
+  	data["days"] = hour;
+  	data["delete"] = delet;
+  	
+
+  	
+  var js = JSON.stringify(data);
+  console.log("JS:" + js);
+  var xhr = new XMLHttpRequest();
+  xhr.open("POST", Old_url, true);
+
+   // send the collected data as JSON
+  xhr.send(js);
+
+// This will process results and update HTML as appropriate. 
+  xhr.onloadend = function () {
+    console.log(xhr);
+    console.log(xhr.request);
+    if (xhr.readyState == XMLHttpRequest.DONE) {
+      console.log ("XHR:" + xhr.responseText);
+      processOldSchedules(xhr.responseText);
+    } else {
+      processOldSchedules("N/A");
+    }
+  };
+}
+
+
+function processOldSchedules(result){
+  var js = JSON.parse(result);
+	var listHTML = "";
+  
+  var schedListReturn = js["scheds"];
+  var oldScheduleList = document.getElementById("oldSchedList");
+  for(var i = 0; i < schedListReturn.length; i++){
+	 listHTML += schedListReturn[i]["name"] + "\n";
+	}
+	oldScheduleList.innerHTML = listHTML;
+	}
+
 
 
 
@@ -76,8 +125,8 @@ function processNewSchedules(result){
 <p style="float: left; margin-left: 10px">Retrieve schedules older than </p>
 <input type="text" id="dayInput" align style = "margin-top: 15px; margin-left: 5px; margin-right: 5px; float: left" size= "2"/>
 <p style="float: left; margin-left= 200px"> days </p>
-<button style = "float: left; margin-left: 10px; margin-top: 15px"> GO! </button>
-<button style = "float: left; margin-left: 10px; margin-top: 15px"> Delete Old Schedules! </button>
+<button onClick="JavaScript:handleOldSchedules(false)" style = "float: left; margin-left: 10px; margin-top: 15px"> GO! </button>
+<button onClick="JavaScript:handleOldSchedules(true)" style = "float: left; margin-left: 10px; margin-top: 15px"> Delete Old Schedules! </button>
 <textarea id = "oldSchedList" style = "margin-left: 30px" name = message rows="15"  cols="60"> 
 </textarea>
 <p style="float: left; margin-left: 50px">Retrieve schedules created in the past </p>
