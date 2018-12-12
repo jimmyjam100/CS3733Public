@@ -6,8 +6,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -24,18 +22,19 @@ import edu.wpi.cs.yidun.model.Schedule;
 import edu.wpi.cs.yidun.model.Timeslot;
 import edu.wpi.cs.yidun.model.Week;
 
-public class OpenDayLambda implements RequestStreamHandler {
+public class OpenTimeLambda implements RequestStreamHandler {
 	
-	void openDay(int id, Date d) throws Exception{
+	void openTime(int id, int schedId) throws Exception{
 		ScheduleDAO dao = new ScheduleDAO();
-		Schedule s = dao.getSchedule(id);
-		for(Week w : s.getWeeks()) {
-			for(Day d2 : w.getDays()) {
-				if (d2.getDate().equals(d)) {
-					for(Timeslot ts : d2.getTimeslots()) {
-						if(!ts.isOpen()) {
-							ts.open();
-							dao.updateTimeslot(ts);
+		Timeslot ts = dao.getTimeslot(id);
+		Schedule sched = dao.getSchedule(schedId);
+		for(Week w : sched.getWeeks()) {
+			for (Day d : w.getDays()) {
+				for (Timeslot t : d.getTimeslots()) {
+					if (t.getTime().equals(ts.getTime())) {
+						if(!t.isOpen()) {
+							t.open();
+							dao.updateTimeslot(t);
 						}
 					}
 				}
@@ -60,7 +59,7 @@ public class OpenDayLambda implements RequestStreamHandler {
 		JSONObject responseJson = new JSONObject();
 		responseJson.put("headers", headerJson);
 
-		OpenDayResponse response = null;
+		OpenTimeResponse response = null;
 		
 		// extract body from incoming HTTP POST request. If any error, then return 422 error
 		String body;
@@ -74,7 +73,7 @@ public class OpenDayLambda implements RequestStreamHandler {
 			String method = (String) event.get("httpMethod");
 			if (method != null && method.equalsIgnoreCase("OPTIONS")) {
 				logger.log("Options request");
-				response = new OpenDayResponse(200);  // OPTIONS needs a 200 response
+				response = new OpenTimeResponse(200);  // OPTIONS needs a 200 response
 		        responseJson.put("body", new Gson().toJson(response));
 		        processed = true;
 		        body = null;
@@ -86,26 +85,26 @@ public class OpenDayLambda implements RequestStreamHandler {
 			}
 		} catch (ParseException pe) {
 			logger.log(pe.toString());
-			response = new OpenDayResponse(422);  // unable to process input
+			response = new OpenTimeResponse(422);  // unable to process input
 	        responseJson.put("body", new Gson().toJson(response));
 	        processed = true;
 	        body = null;
 		}
 
 		if (!processed) {
-			OpenDayRequest req = new Gson().fromJson(body, OpenDayRequest.class);
-			OpenDayResponse resp = new OpenDayResponse(400);
+			OpenTimeRequest req = new Gson().fromJson(body, OpenTimeRequest.class);
+			OpenTimeResponse resp = new OpenTimeResponse(400);
 			try {
 				if (validate(req.schedId, req.password)) {
-					openDay(req.schedId, new SimpleDateFormat("yyyy-MM-dd").parse(req.date));
-					resp = new OpenDayResponse(200);
+					openTime(req.id, req.schedId);
+					resp = new OpenTimeResponse(200);
 				}
 				else {
-					resp = new OpenDayResponse(420);
+					resp = new OpenTimeResponse(420);
 				}
 
 			} catch (Exception e) {
-				resp = new OpenDayResponse(400);
+				resp = new OpenTimeResponse(400);
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}

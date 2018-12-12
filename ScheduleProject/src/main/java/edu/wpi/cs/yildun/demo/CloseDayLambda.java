@@ -31,9 +31,9 @@ public class CloseDayLambda implements RequestStreamHandler {
 		Schedule s = dao.getSchedule(id);
 		for(Week w : s.getWeeks()) {
 			for(Day d2 : w.getDays()) {
-				if (d2.getDate().equals(d2)) {
+				if (d2.getDate().equals(d)) {
 					for(Timeslot ts : d2.getTimeslots()) {
-						if(!(ts.getUser().equals(""))) {
+						if((ts.getUser().equals(""))) {
 							ts.close();
 							dao.updateTimeslot(ts);
 						}
