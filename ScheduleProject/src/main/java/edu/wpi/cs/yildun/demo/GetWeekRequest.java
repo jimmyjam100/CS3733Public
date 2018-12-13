@@ -10,7 +10,7 @@ public class GetWeekRequest {
 		this.date = date;
 	}
 	public String toString() {
-		return "GetWeek(" + schedId + ", " + date.toString() + ")";
+		return "GetWeek(" + schedId + ", " + date + ")";
 	}
 
 }

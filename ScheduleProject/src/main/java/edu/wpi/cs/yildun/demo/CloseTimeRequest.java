@@ -5,8 +5,9 @@ public class CloseTimeRequest {
 	int schedId;
 	String password;
 	
-	public CloseTimeRequest(int id, String password) {
+	public CloseTimeRequest(int id, int schedId, String password) {
 		this.id = id;
+		this.schedId = schedId;
 		this.password = password;
 	}
 	

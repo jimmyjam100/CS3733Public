@@ -68,7 +68,7 @@ public class LambdaFunctionHandler implements RequestStreamHandler {
 	    return generatedString;
 	}
 	
-	public static Date resetTime (Date d) {
+	/*public static Date resetTime (Date d) {
 	    Calendar cal = new GregorianCalendar();
 	    cal.setTime(d);
 	    cal.set(Calendar.HOUR_OF_DAY, 0);
@@ -94,7 +94,7 @@ public class LambdaFunctionHandler implements RequestStreamHandler {
 	        weeks++;
 	    }
 	    return weeks;
-	}
+	}*/
 	
 	public static Schedule newSchedule(String n, Date sD, Date eD, LocalTime sT, LocalTime eT, int timeslotL) {
 		Schedule temp = new Schedule(sD, eD, sT, eT, n, randString(), timeslotL);
@@ -125,7 +125,7 @@ public class LambdaFunctionHandler implements RequestStreamHandler {
 		ScheduleDAO dao = new ScheduleDAO();
 		dao.addSchedule(sched);
 	}
-	
+	/*
 	boolean createSchedule(String n, Date sD, Date eD, LocalTime sT, LocalTime eT, int timeslotL) throws Exception {
 		Schedule temp = newSchedule(n, sD, eD, sT, eT, timeslotL);
 		ScheduleDAO dao = new ScheduleDAO();
@@ -133,7 +133,7 @@ public class LambdaFunctionHandler implements RequestStreamHandler {
 		dao.addSchedule(temp);
 		return true;
 	}
-	
+	*/
 
 	// handle to our s3 storage
 	private AmazonS3 s3 = AmazonS3ClientBuilder.standard()
@@ -149,6 +149,7 @@ public class LambdaFunctionHandler implements RequestStreamHandler {
 	 */
 	
 	/** Load up S3 Bucket with given key and interpret contents as double. */
+	/*
 	double loadValueFromBucket(String arg) {
 		if (logger != null) { logger.log("load from bucket:" + arg); }
 		try {
@@ -171,7 +172,7 @@ public class LambdaFunctionHandler implements RequestStreamHandler {
 			return 0;
 		}
 	}
-
+*/
 	@SuppressWarnings("deprecation")
 	@Override
 	public void handleRequest(InputStream input, OutputStream output, Context context) throws IOException {
